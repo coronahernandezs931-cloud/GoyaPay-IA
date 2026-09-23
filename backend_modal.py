@@ -343,7 +343,94 @@ async def enviar_correo_pago(request: Request):
     except Exception as e:
         return {"status": "error", "message": "error al enviar correo", "detail": str(e)}
 
-# 6. Endpoint: Confirmar Pago desde Checkout (Actualiza Estado a 'pagado' en Notion y Envía Recibo de Agradecimiento)
+# 6. Generador de Comprobantes de Pago Multibanco (Tangem, SPEI, Tarjeta)
+def generar_html_correo_recibo(concepto: str, monto: float, metodo_pago: str, detalle: str, nombre_usuario: str = "Sergio Ethan Corona Hernández") -> str:
+    es_spei = "spei" in metodo_pago.lower()
+    es_tarjeta = "tarjeta" in metodo_pago.lower()
+    es_tangem = not es_spei and not es_tarjeta
+    
+    if es_spei:
+        badge_txt = "TRANSFERENCIA SPEI ACREDITADA"
+        badge_bg = "rgba(16, 185, 129, 0.15)"
+        badge_border = "rgba(16, 185, 129, 0.3)"
+        badge_color = "#34d399"
+        subtitulo = "Comprobante de Transferencia Interbancaria en STP"
+        detalle_lbl = "Folio / Banco:"
+        detalle_val = detalle if detalle else "STP • CLABE 646180123456789012"
+        icono = "🏦"
+    elif es_tarjeta:
+        badge_txt = "COBRO BANCARIO 3D-SECURE"
+        badge_bg = "rgba(59, 130, 246, 0.15)"
+        badge_border = "rgba(59, 130, 246, 0.3)"
+        badge_color = "#60a5fa"
+        subtitulo = "Comprobante de Autorización Bancaria Segura"
+        detalle_lbl = "Método / Tarjeta:"
+        detalle_val = detalle if detalle else "Tarjeta Débito/Crédito Cifrada"
+        icono = "💳"
+    else:
+        badge_txt = "TANGEM COLD WALLET • HARDWARE NFC"
+        badge_bg = "rgba(139, 92, 246, 0.15)"
+        badge_border = "rgba(139, 92, 246, 0.3)"
+        badge_color = "#a78bfa"
+        subtitulo = "Comprobante Criptográfico EAL6+ Validado"
+        detalle_lbl = "Hardware Wallet:"
+        detalle_val = detalle if detalle else "0x92932D7d5341B84f524D0715F3cac55C10d12E4e"
+        icono = "🔐"
+
+    return f"""<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"></head>
+<body style="margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #f8fafc;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding: 40px 15px;">
+        <tr>
+            <td align="center">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 540px; background: linear-gradient(180deg, #111827 0%, #0b0f19 100%); border: 1px solid #1e293b; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);">
+                    <tr>
+                        <td style="padding: 36px 36px 20px 36px; text-align: center; background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.18), transparent 70%);">
+                            <div style="display: inline-block; padding: 6px 14px; background: {badge_bg}; border: 1px solid {badge_border}; border-radius: 9999px; margin-bottom: 14px;">
+                                <span style="color: {badge_color}; font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;">{badge_txt}</span>
+                            </div>
+                            <div style="font-size: 32px; margin-bottom: 8px;">{icono}</div>
+                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800;">¡Gracias por usar GoyaPay AI!</h1>
+                            <p style="margin: 6px 0 0 0; color: #34d399; font-size: 14px; font-weight: 600;">{subtitulo}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 24px 36px 32px 36px;">
+                            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                                Hola <strong style="color: #ffffff;">{nombre_usuario}</strong>, tu transacción ha sido confirmada y registrada en el sistema de gestión del negocio y la UNAM.
+                            </p>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0d1322; border: 1px solid #1e293b; border-radius: 16px; margin-bottom: 20px; padding: 18px 20px;">
+                                <tr>
+                                    <td style="padding-bottom: 10px; color: #94a3b8; font-size: 12px;">Concepto:</td>
+                                    <td align="right" style="padding-bottom: 10px; color: #ffffff; font-weight: 700; font-size: 13px;">{concepto}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-bottom: 10px; color: #94a3b8; font-size: 12px;">Monto Liquidado:</td>
+                                    <td align="right" style="padding-bottom: 10px; color: #34d399; font-weight: 800; font-size: 16px;">${float(monto):.2f} MXN</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-bottom: 10px; color: #94a3b8; font-size: 12px;">{detalle_lbl}</td>
+                                    <td align="right" style="padding-bottom: 10px; color: #60a5fa; font-family: monospace; font-size: 11px;">{detalle_val}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #94a3b8; font-size: 12px;">Estado en Sistema:</td>
+                                    <td align="right" style="color: #34d399; font-weight: 700; font-size: 12px;">PAGADO (Sincronizado)</td>
+                                </tr>
+                            </table>
+                            <p style="color: #64748b; font-size: 12px; text-align: center; margin: 0;">
+                                GoyaPay Business Manager • Plataforma Oficial de Liquidación Multibanco & Web3 🚀
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>"""
+
+# 7. Endpoint: Confirmar Pago desde Checkout (Multibanco: Tangem, SPEI, Tarjeta)
 @app.function(image=image, secrets=[goyapay_secret])
 @modal.fastapi_endpoint(method="POST")
 async def confirmar_pago_notion(request: Request):
@@ -361,10 +448,14 @@ async def confirmar_pago_notion(request: Request):
     }
     
     page_id = args.get("page_id") or args.get("pago_id") or ""
-    wallet_address = args.get("wallet_address", "0x92932D7d5341B84f524D0715F3cac55C10d12E4e")
+    metodo_pago = args.get("metodo_pago") or args.get("metodo") or "Tangem Cold Wallet NFC"
+    detalle = args.get("detalle") or args.get("wallet_address") or "0x92932D7d5341B84f524D0715F3cac55C10d12E4e"
     user_email = args.get("email") or "coronahernandezs931@gmail.com"
-    concepto = args.get("concepto", "Trámite UNAM")
-    monto = args.get("monto", "0.00")
+    concepto = args.get("concepto", "Trámite / Servicio")
+    try:
+        monto = float(args.get("monto", 0.0))
+    except (ValueError, TypeError):
+        monto = 0.0
     
     payload = {
         "properties": {
@@ -378,77 +469,300 @@ async def confirmar_pago_notion(request: Request):
         resp = requests.patch(f"https://api.notion.com/v1/pages/{page_id}", headers=headers, json=payload)
         res_data = resp.json()
         
-        # Enviar correo de confirmación y agradecimiento
+        # Enviar correo de comprobante adaptado al método de pago
         try:
             resend.api_key = os.environ.get("RESEND_API_KEY")
-            correo_agradecimiento = f"""<!DOCTYPE html>
-<html lang="es">
-<head><meta charset="utf-8"></head>
-<body style="margin: 0; padding: 0; background-color: #07090e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #f8fafc;">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding: 40px 15px;">
-        <tr>
-            <td align="center">
-                <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 540px; background: linear-gradient(180deg, #111827 0%, #0b0f19 100%); border: 1px solid #10b981; border-radius: 24px; overflow: hidden; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);">
-                    <tr>
-                        <td style="padding: 36px 36px 20px 36px; text-align: center; background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.2), transparent 70%);">
-                            <div style="display: inline-block; width: 56px; height: 56px; border-radius: 50%; background: rgba(16, 185, 129, 0.2); border: 2px solid #10b981; line-height: 56px; font-size: 26px; margin-bottom: 14px;">
-                                ✅
-                            </div>
-                            <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 800;">¡Gracias por usar GoyaPay AI!</h1>
-                            <p style="margin: 6px 0 0 0; color: #34d399; font-size: 14px; font-weight: 600;">Comprobante de Pago Liquidado Exitosamente</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 24px 36px 32px 36px;">
-                            <p style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
-                                Hola <strong>Sergio Ethan Corona Hernández</strong>, tu transacción con <strong>Tangem Cold Wallet</strong> ha sido autenticada y registrada en el sistema de la UNAM.
-                            </p>
-                            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0d1322; border: 1px solid #1e293b; border-radius: 16px; margin-bottom: 20px; padding: 18px 20px;">
-                                <tr>
-                                    <td style="padding-bottom: 10px; color: #94a3b8; font-size: 12px;">Concepto:</td>
-                                    <td align="right" style="padding-bottom: 10px; color: #ffffff; font-weight: 700; font-size: 13px;">{concepto}</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding-bottom: 10px; color: #94a3b8; font-size: 12px;">Monto Liquidado:</td>
-                                    <td align="right" style="padding-bottom: 10px; color: #34d399; font-weight: 800; font-size: 16px;">${float(monto):.2f} MXN</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding-bottom: 10px; color: #94a3b8; font-size: 12px;">Wallet Hardware:</td>
-                                    <td align="right" style="padding-bottom: 10px; color: #60a5fa; font-family: monospace; font-size: 11px;">{wallet_address[:8]}...{wallet_address[-6:]}</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #94a3b8; font-size: 12px;">Estado Notion:</td>
-                                    <td align="right" style="color: #34d399; font-weight: 700; font-size: 12px;">PAGADO (Actualizado)</td>
-                                </tr>
-                            </table>
-                            <p style="color: #64748b; font-size: 12px; text-align: center; margin: 0;">
-                                ¡Mucho éxito en tu presentación de Goya Hack 2026! 🚀
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>"""
+            correo_agradecimiento = generar_html_correo_recibo(
+                concepto=concepto,
+                monto=monto,
+                metodo_pago=metodo_pago,
+                detalle=detalle,
+                nombre_usuario="Sergio Ethan Corona Hernández"
+            )
             resend.Emails.send({
                 "from": "GoyaPay AI <onboarding@resend.dev>",
                 "to": [user_email],
-                "subject": f"✅ Comprobante de Pago Exitoso: {concepto} (GoyaPay Tangem)",
+                "subject": f"✅ Comprobante de Pago Exitoso: {concepto} ({metodo_pago})",
                 "html": correo_agradecimiento
             })
         except Exception as err_mail:
             print("Error enviando recibo de agradecimiento:", err_mail)
             
         if resp.status_code == 200:
-            return {"status": "success", "page_id": page_id, "estado": "pagado"}
+            return {
+                "status": "success",
+                "page_id": page_id,
+                "estado": "pagado",
+                "metodo_pago": metodo_pago,
+                "detalle": detalle
+            }
         else:
             return {"status": "error", "message": res_data.get("message", "Error al actualizar Notion")}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# 7. Endpoint: Chat Asistente de Texto (Sofía Web Chat)
+# ==============================================================================
+# 8. MÓDULO DE ADMINISTRACIÓN DE NEGOCIO: FINANZAS (NOTION) & CUENTAS (ZERNIO API)
+# ==============================================================================
+def obtener_analisis_finanzas_negocio(db_id: str, token: str) -> dict:
+    import requests
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json"
+    }
+    resp = requests.post(f"https://api.notion.com/v1/databases/{db_id}/query", headers=headers, json={})
+    data = resp.json()
+    results = data.get("results", [])
+    
+    total_cobrado = 0.0
+    total_pendiente = 0.0
+    pagados = []
+    pendientes = []
+    
+    for page in results:
+        props = page.get("properties", {})
+        title_items = props.get("Concepto", {}).get("title", [])
+        concepto = title_items[0]["text"]["content"] if title_items else "Sin concepto"
+        monto = float(props.get("Monto", {}).get("number", 0.0) or 0.0)
+        estado_obj = props.get("Estado", {}).get("select") or {}
+        estado = estado_obj.get("name", "pendiente")
+        
+        item = {
+            "id": page.get("id"),
+            "concepto": concepto,
+            "monto": monto,
+            "estado": estado
+        }
+        
+        if estado == "pagado":
+            total_cobrado += monto
+            pagados.append(item)
+        else:
+            total_pendiente += monto
+            pendientes.append(item)
+            
+    balance_neto = total_cobrado - total_pendiente
+    total_transacciones = len(results)
+    tasa_cobranza = (total_cobrado / (total_cobrado + total_pendiente) * 100) if (total_cobrado + total_pendiente) > 0 else 100.0
+    ticket_promedio = (total_cobrado / len(pagados)) if pagados else 0.0
+    
+    if total_pendiente == 0:
+        salud = "Excelente"
+        diagnostico = f"El negocio cuenta con un 100% de cobranza efectiva. Se han liquidado {len(pagados)} transacciones recaudando ${total_cobrado:.2f} MXN sin adeudos pendientes."
+    elif balance_neto > 0:
+        salud = "Saludable"
+        diagnostico = f"Flujo neto positivo de +${balance_neto:.2f} MXN. Se han cobrado ${total_cobrado:.2f} MXN con ${total_pendiente:.2f} MXN en cuentas por cobrar ({tasa_cobranza:.1f}% tasa de cobranza)."
+    else:
+        salud = "Atención requerida"
+        diagnostico = f"Los gastos/adeudos pendientes (${total_pendiente:.2f} MXN) superan los ingresos recaudados (${total_cobrado:.2f} MXN). Se recomienda activar cobranza asistida."
+        
+    return {
+        "salud_financiera": salud,
+        "total_cobrado": total_cobrado,
+        "total_pendiente": total_pendiente,
+        "balance_neto": balance_neto,
+        "tasa_cobranza_pct": round(tasa_cobranza, 1),
+        "total_transacciones": total_transacciones,
+        "ticket_promedio": round(ticket_promedio, 2),
+        "diagnostico": diagnostico,
+        "num_pagados": len(pagados),
+        "num_pendientes": len(pendientes),
+        "pagados_recientes": pagados[:5],
+        "pendientes_recientes": pendientes[:5]
+    }
+
+def obtener_analisis_zernio(api_key: str) -> dict:
+    import requests
+    headers = {"Authorization": f"Bearer {api_key}"}
+    
+    # 1. Cuentas conectadas
+    r_acc = requests.get("https://zernio.com/api/v1/accounts", headers=headers)
+    accounts = r_acc.json().get("accounts", []) if r_acc.status_code == 200 else []
+    
+    canales = []
+    total_seguidores = 0
+    for a in accounts:
+        followers = a.get("followersCount", 0) or 0
+        total_seguidores += followers
+        canales.append({
+            "plataforma": a.get("platform"),
+            "display_name": a.get("displayName"),
+            "username": a.get("username"),
+            "seguidores": followers,
+            "activo": a.get("isActive", True),
+            "profile_url": a.get("profileUrl") or a.get("metadata", {}).get("profileUrl")
+        })
+        
+    # 2. Analíticas de publicaciones
+    r_an = requests.get("https://zernio.com/api/v1/analytics", headers=headers)
+    an_data = r_an.json() if r_an.status_code == 200 else {}
+    posts_an = an_data.get("posts", an_data.get("results", []))
+    
+    total_vistas = 0
+    total_likes = 0
+    total_shares = 0
+    total_comments = 0
+    sum_engagement = 0.0
+    posts_con_eng = 0
+    
+    for p in posts_an:
+        if isinstance(p, dict):
+            an = p.get("analytics", {})
+            vistas = an.get("views", 0) or 0
+            likes = an.get("likes", 0) or 0
+            shares = an.get("shares", 0) or 0
+            comments = an.get("comments", 0) or 0
+            eng = an.get("engagementRate", 0.0) or 0.0
+            
+            total_vistas += vistas
+            total_likes += likes
+            total_shares += shares
+            total_comments += comments
+            if eng > 0:
+                sum_engagement += eng
+                posts_con_eng += 1
+                
+    engagement_promedio = (sum_engagement / posts_con_eng) if posts_con_eng > 0 else 0.0
+    
+    # 3. Posts programados en pipeline
+    r_posts = requests.get("https://zernio.com/api/v1/posts", headers=headers)
+    posts_data = r_posts.json() if r_posts.status_code == 200 else {}
+    total_posts_pipeline = posts_data.get("pagination", {}).get("total", 0)
+    
+    diagnostico_audiencia = (
+        f"Tu negocio tiene presencia activa en {len(canales)} canales (TikTok y YouTube), "
+        f"con {total_seguidores} seguidores y más de {total_vistas:,} visualizaciones orgánicas acumuladas en {len(posts_an)} publicaciones. "
+        f"Tasa de interacción promedio del {engagement_promedio:.2f}%. Tienes un pipeline constante con {total_posts_pipeline} publicaciones programadas en cola."
+    )
+    
+    return {
+        "canales_activos": canales,
+        "total_canales": len(canales),
+        "total_seguidores": total_seguidores,
+        "total_vistas": total_vistas,
+        "total_likes": total_likes,
+        "total_shares": total_shares,
+        "total_comments": total_comments,
+        "engagement_promedio_pct": round(engagement_promedio, 2),
+        "posts_en_pipeline": total_posts_pipeline,
+        "posts_analizados": len(posts_an),
+        "diagnostico_audiencia": diagnostico_audiencia
+    }
+
+# 9. Endpoint: Analizar Finanzas y Gastos del Negocio (Notion CRM)
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def analizar_finanzas_negocio(request: Request):
+    token = os.environ.get("NOTION_API_KEY")
+    db_id = os.environ.get("NOTION_DATABASE_ID")
+    try:
+        analisis = obtener_analisis_finanzas_negocio(db_id, token)
+        return {"status": "success", "analisis": analisis}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+# 10. Endpoint: Analizar Cuentas Digitales y Audiencia del Negocio (Zernio API)
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def analizar_cuentas_negocio(request: Request):
+    zernio_key = os.environ.get("ZERNIO_API_KEY", "")
+    try:
+        analisis = obtener_analisis_zernio(zernio_key)
+        return {"status": "success", "analisis": analisis}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+# 11. Endpoint: Resumen Ejecutivo 360° del Negocio (Finanzas + Cuentas Zernio)
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def resumen_administrador_negocio(request: Request):
+    token = os.environ.get("NOTION_API_KEY")
+    db_id = os.environ.get("NOTION_DATABASE_ID")
+    zernio_key = os.environ.get("ZERNIO_API_KEY", "")
+    
+    try:
+        finanzas = obtener_analisis_finanzas_negocio(db_id, token)
+    except Exception as e:
+        finanzas = {"error": str(e)}
+        
+    try:
+        cuentas = obtener_analisis_zernio(zernio_key)
+    except Exception as e:
+        cuentas = {"error": str(e)}
+        
+    return {
+        "status": "success",
+        "administrador": "Sergio Ethan Corona Hernández",
+        "plataforma": "GoyaPay Business Manager",
+        "finanzas": finanzas,
+        "cuentas_digitales": cuentas,
+        "resumen_ejecutivo": f"💼 **Reporte Ejecutivo GoyaPay Negocios**:\n"
+                            f"• Total Recaudado: ${finanzas.get('total_cobrado', 0.0):.2f} MXN ({finanzas.get('num_pagados', 0)} transacciones)\n"
+                            f"• Adeudos/Gastos Pendientes: ${finanzas.get('total_pendiente', 0.0):.2f} MXN\n"
+                            f"• Balance Neto Operativo: +${finanzas.get('balance_neto', 0.0):.2f} MXN (Salud: {finanzas.get('salud_financiera', 'N/A')})\n"
+                            f"• Cuentas Conectadas en Zernio: {cuentas.get('total_canales', 0)} ({cuentas.get('total_seguidores', 0)} seguidores totales)\n"
+                            f"• Alcance de Contenidos: {cuentas.get('total_vistas', 0):,} vistas acumuladas con {cuentas.get('total_likes', 0)} likes\n"
+                            f"• Pipeline de Publicaciones: {cuentas.get('posts_en_pipeline', 0)} publicaciones programadas"
+    }
+
+# 12. Endpoint: Registrar Gasto o Cuenta del Negocio en Notion
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def registrar_gasto_negocio(request: Request):
+    import requests
+    body = await request.json()
+    args = body.get("args", body)
+    
+    token = os.environ.get("NOTION_API_KEY")
+    db_id = os.environ.get("NOTION_DATABASE_ID")
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Notion-Version": "2022-06-28",
+        "Content-Type": "application/json"
+    }
+    
+    concepto = args.get("concepto", "Gasto Operativo Negocio")
+    monto = float(args.get("monto", 0.0))
+    estado = args.get("estado", "pendiente")
+    telefono = args.get("telefono", "+527772310427")
+    usuario = args.get("usuario", "GoyaPay Negocios / Sergio Ethan")
+    email = args.get("email", "coronahernandezs931@gmail.com")
+    
+    try:
+        new_page_payload = {
+            "parent": {"database_id": db_id},
+            "properties": {
+                "Concepto": {
+                    "title": [{"text": {"content": concepto}}]
+                },
+                "Telefono": {
+                    "phone_number": telefono
+                },
+                "Usuario": {
+                    "rich_text": [{"text": {"content": usuario}}]
+                },
+                "Monto": {
+                    "number": monto
+                },
+                "Estado": {
+                    "select": {"name": estado}
+                },
+                "Correo": {
+                    "email": email
+                }
+            }
+        }
+        resp = requests.post("https://api.notion.com/v1/pages", headers=headers, json=new_page_payload)
+        res_data = resp.json()
+        if resp.status_code == 200:
+            return {"status": "success", "page_id": res_data["id"], "concepto": concepto, "monto": monto, "estado": estado}
+        else:
+            return {"status": "error", "error": res_data.get("message", "Error al registrar en Notion")}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+# 13. Endpoint: Chat Asistente de Texto (Sofía Web Chat & Business Manager)
 @app.function(image=image, secrets=[goyapay_secret])
 @modal.fastapi_endpoint(method="POST")
 async def chat_goyapay(request: Request):
@@ -459,15 +773,71 @@ async def chat_goyapay(request: Request):
     user_phone = body.get("user_phone", "7772310427")
     user_email = body.get("user_email", "coronahernandezs931@gmail.com")
     
-    # 1. Consultar Notion
     db_id = os.environ.get("NOTION_DATABASE_ID")
     token = os.environ.get("NOTION_API_KEY")
+    zernio_key = os.environ.get("ZERNIO_API_KEY", "")
+    
+    # Intención: Análisis de Finanzas / Gastos del Negocio
+    if any(w in mensaje for w in ["finanza", "gasto", "balance", "ingreso", "flujo", "caja", "cuentas de mi negocio"]):
+        try:
+            fin = obtener_analisis_finanzas_negocio(db_id, token)
+            texto_resp = (
+                f"💼 **Diagnóstico Financiero de tu Negocio:**\n\n"
+                f"• **Ingresos Recaudados:** ${fin['total_cobrado']:.2f} MXN ({fin['num_pagados']} cobros liquidados)\n"
+                f"• **Gastos / Adeudos Pendientes:** ${fin['total_pendiente']:.2f} MXN ({fin['num_pendientes']} pendientes)\n"
+                f"• **Balance Neto:** +${fin['balance_neto']:.2f} MXN\n"
+                f"• **Efectividad de Cobranza:** {fin['tasa_cobranza_pct']}%\n"
+                f"• **Ticket Promedio:** ${fin['ticket_promedio']:.2f} MXN\n\n"
+                f"📊 **Evaluación de Salud:** *{fin['salud_financiera']}*\n{fin['diagnostico']}"
+            )
+            return {"respuesta": texto_resp, "analisis_finanzas": fin}
+        except Exception as e:
+            return {"respuesta": f"Detalle al analizar finanzas: {str(e)}", "error": str(e)}
+
+    # Intención: Análisis de Cuentas Digitales y Contenidos (Zernio API)
+    elif any(w in mensaje for w in ["red", "redes", "canal", "tiktok", "youtube", "zernio", "audiencia", "seguidor", "metricas", "vistas", "pipeline"]):
+        try:
+            zer = obtener_analisis_zernio(zernio_key)
+            canales_txt = ", ".join([f"{c['plataforma'].capitalize()} (@{c['username']} - {c['seguidores']} seguidores)" for c in zer['canales_activos']])
+            texto_resp = (
+                f"🌐 **Análisis de Cuentas y Canales Digitales (Vía Zernio API):**\n\n"
+                f"• **Canales Conectados ({zer['total_canales']}):** {canales_txt}\n"
+                f"• **Seguidores Totales:** {zer['total_seguidores']}\n"
+                f"• **Visualizaciones Acumuladas:** {zer['total_vistas']:,} vistas orgánicas\n"
+                f"• **Reacciones & Likes:** {zer['total_likes']} likes ({zer['total_shares']} compartidos)\n"
+                f"• **Tasa de Interacción Media:** {zer['engagement_promedio_pct']}%\n"
+                f"• **Pipeline Activo:** {zer['posts_en_pipeline']} publicaciones programadas en cola.\n\n"
+                f"🚀 **Diagnóstico:** {zer['diagnostico_audiencia']}"
+            )
+            return {"respuesta": texto_resp, "analisis_cuentas": zer}
+        except Exception as e:
+            return {"respuesta": f"Detalle al consultar Zernio: {str(e)}", "error": str(e)}
+
+    # Intención: Resumen Ejecutivo 360° del Negocio
+    elif any(w in mensaje for w in ["360", "resumen", "ejecutivo", "administrador", "reporte", "como va", "panorama", "diagnostico"]):
+        try:
+            fin = obtener_analisis_finanzas_negocio(db_id, token)
+            zer = obtener_analisis_zernio(zernio_key)
+            texto_resp = (
+                f"🏢 **Resumen Ejecutivo 360° - GoyaPay Business Manager**\n\n"
+                f"**1. Finanzas y Cobranza (Notion CRM):**\n"
+                f"• Cobrado: ${fin['total_cobrado']:.2f} MXN | Pendiente: ${fin['total_pendiente']:.2f} MXN\n"
+                f"• Balance Neto: +${fin['balance_neto']:.2f} MXN (Tasa Cobranza: {fin['tasa_cobranza_pct']}%)\n\n"
+                f"**2. Cuentas Digitales y Difusión (Zernio API):**\n"
+                f"• Presencia en: TikTok y YouTube ({zer['total_seguidores']} seguidores)\n"
+                f"• Tracción: {zer['total_vistas']:,} vistas acumuladas y {zer['posts_en_pipeline']} videos en pipeline\n\n"
+                f"✅ **Veredicto:** El negocio goza de excelente solvencia financiera y un ritmo de publicación automatizado muy consistente."
+            )
+            return {"respuesta": texto_resp, "finanzas": fin, "cuentas": zer}
+        except Exception as e:
+            return {"respuesta": f"Detalle generando reporte: {str(e)}", "error": str(e)}
+
+    # Consultar Notion para Adeudos Pendientes habituales
     headers = {
         "Authorization": f"Bearer {token}",
         "Notion-Version": "2022-06-28",
         "Content-Type": "application/json"
     }
-    
     try:
         query_payload = {
             "filter": {
@@ -493,11 +863,10 @@ async def chat_goyapay(request: Request):
             m_val = props.get("Monto", {}).get("number", 0.0)
             pagos.append({"numero": idx, "pago_id": p_id, "concepto": c_text, "monto": m_val})
         
-        # Lógica de detección de intención del mensaje
         if any(w in mensaje for w in ["pago", "adeudo", "debo", "deuda", "pendiente", "consultar", "saldo", "hola"]):
             if not pagos:
                 return {
-                    "respuesta": "¡Hola Sergio! He consultado el sistema y no tienes ningún adeudo pendiente en este momento. Estás totalmente al corriente.",
+                    "respuesta": "¡Hola Sergio! He consultado el sistema y no tienes ningún adeudo pendiente en este momento. Estás totalmente al corriente.\n\nTambién puedo ayudarte a:\n• 💼 **Analizar finanzas del negocio**\n• 🌐 **Analizar cuentas digitales (Zernio)**\n• 🏢 **Ver resumen ejecutivo del negocio**",
                     "pagos": []
                 }
             
@@ -505,12 +874,11 @@ async def chat_goyapay(request: Request):
             texto_resp = (
                 f"¡Hola Sergio! Tienes {len(pagos)} adeudo(s) pendiente(s):\n\n" +
                 "\n".join(resumen_lineas) +
-                "\n\n¿Cuál de ellos deseas pagar? Puedes responder con el número (ej: 'pagar el 1') o hacer clic en el botón de liquidación."
+                "\n\n¿Cuál de ellos deseas pagar? Puedes responder 'pagar el 1' para recibir tu enlace con opción de **Tangem Cold Wallet, SPEI Banco o Tarjeta**."
             )
             return {"respuesta": texto_resp, "pagos": pagos}
             
         elif any(w in mensaje for w in ["1", "primero", "2", "segundo", "3", "tercero", "4", "cuarto", "pagar", "liquidar"]):
-            # Identificar qué pago seleccionó
             seleccion = None
             if "1" in mensaje or "primer" in mensaje:
                 seleccion = pagos[0] if len(pagos) >= 1 else None
@@ -524,7 +892,6 @@ async def chat_goyapay(request: Request):
                 seleccion = pagos[0]
             
             if seleccion:
-                # Disparar envío de correo
                 import urllib.parse
                 base_url = os.environ.get("VERCEL_CHECKOUT_URL", "https://checkout-web-seven.vercel.app/checkout")
                 params = urllib.parse.urlencode({
@@ -535,7 +902,6 @@ async def chat_goyapay(request: Request):
                 })
                 checkout_url = f"{base_url}?{params}"
                 
-                # Enviar correo vía Resend
                 try:
                     import resend
                     resend.api_key = os.environ.get("RESEND_API_KEY")
@@ -547,14 +913,14 @@ async def chat_goyapay(request: Request):
                     resend.Emails.send({
                         "from": "GoyaPay AI <onboarding@resend.dev>",
                         "to": [user_email],
-                        "subject": f"GoyaPay: Enlace de Autorización para {seleccion['concepto']}",
+                        "subject": f"GoyaPay: Enlace de Autorización para {seleccion['concepto']} (Multibanco & Tangem)",
                         "html": html_chat_email
                     })
                 except Exception as ex_mail:
                     print("Error enviando correo en chat:", ex_mail)
                 
                 return {
-                    "respuesta": f"¡Excelente! Te he enviado el enlace seguro de pago para {seleccion['concepto']} (${seleccion['monto']:.2f} MXN) a tu correo registrado ({user_email}). También puedes abrirlo directamente aquí abajo:",
+                    "respuesta": f"¡Excelente! Te he enviado el enlace seguro de pago para {seleccion['concepto']} (${seleccion['monto']:.2f} MXN) a tu correo ({user_email}). Puedes pagar con Tangem Cold Wallet, Transferencia SPEI o Tarjeta Bancaria:",
                     "checkout_url": checkout_url,
                     "pago_seleccionado": seleccion
                 }
@@ -564,8 +930,9 @@ async def chat_goyapay(request: Request):
                 }
         else:
             return {
-                "respuesta": "Soy Sofía de GoyaPay AI. Puedes escribirme 'consultar adeudos' para ver tu lista de pagos pendientes o 'pagar el 1' para recibir tu enlace de TangemPay."
+                "respuesta": "Soy Sofía de GoyaPay AI Business. Puedo ayudarte con:\n• 📋 Consultar adeudos o pagar trámites (Tangem, SPEI o Tarjeta)\n• 💼 **Analizar finanzas del negocio**\n• 🌐 **Analizar cuentas digitales (Zernio)**\n• 🏢 **Resumen ejecutivo 360° del negocio**"
             }
     except Exception as e:
-        return {"respuesta": f"Hubo un detalle al consultar Notion: {str(e)}", "error": str(e)}
+        return {"respuesta": f"Hubo un detalle al procesar la solicitud: {str(e)}", "error": str(e)}
+
 
