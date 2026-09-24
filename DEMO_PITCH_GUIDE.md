@@ -55,8 +55,4 @@ Se ha desplegado y orquestado un sistema autónomo de cobranza y pagos asistidos
    - En Notion, el estado de la fila cambia inmediatamente a **PAGADO** en verde.
    - Redirecciona automáticamente a la app `tangem://` para el firmado criptográfico de la transacción.
 
----
 
-## 🛡️ Integridad del Proyecto Sofía
-- El proyecto original de Sofía (`sofia-voice-agent`) y su número telefónico de Twilio (`+12318670128`) permanecen **100% intactos e inalterados**.
-- Para la evaluación y el pitch no necesitas tocar Twilio: el simulador web call de Retell permite que los jueces o tú interactúen con voz humana real y ultra-baja latencia directamente desde el navegador.
