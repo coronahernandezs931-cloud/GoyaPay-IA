@@ -18,6 +18,7 @@ image = (
         "resend>=2.0.0",
         "requests>=2.32.0",
         "python-dotenv>=1.0.0",
+        "stripe>=7.0.0",
     )
 )
 
@@ -259,22 +260,29 @@ def generar_html_correo_tangem(concepto: str, monto: float, checkout_url: str, n
                                 </tr>
                             </table>
 
-                            <!-- Botón Principal TangemPay -->
+                            <!-- Botones Principales: Tangem & Stripe -->
                             <table width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 24px;">
                                 <tr>
+                                    <td align="center" style="padding-bottom: 12px;">
+                                        <a href="{checkout_url}&metodo=tangem" target="_blank" style="display: block; width: 85%; padding: 15px 20px; background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: #ffffff; text-decoration: none; border-radius: 14px; font-size: 14px; font-weight: 700; text-align: center; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); letter-spacing: 0.3px;">
+                                            🔐 Conectar Tangem Cold Wallet (NFC) &rarr;
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td align="center">
-                                        <a href="{checkout_url}" target="_blank" style="display: block; width: 85%; padding: 16px 24px; background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: #ffffff; text-decoration: none; border-radius: 14px; font-size: 15px; font-weight: 700; text-align: center; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5); letter-spacing: 0.3px;">
-                                            💳 Autorizar con Tangem Cold Wallet &rarr;
+                                        <a href="{checkout_url}&metodo=tarjeta" target="_blank" style="display: block; width: 85%; padding: 15px 20px; background: linear-gradient(135deg, #059669 0%, #0d9488 100%); color: #ffffff; text-decoration: none; border-radius: 14px; font-size: 14px; font-weight: 700; text-align: center; box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4); letter-spacing: 0.3px;">
+                                            💳 Pagar Directo con Stripe (Tarjeta) &rarr;
                                         </a>
                                     </td>
                                 </tr>
                             </table>
 
-                            <!-- Info de Seguridad -->
+                            <!-- Info de Métodos -->
                             <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background: rgba(255, 255, 255, 0.02); border: 1px dashed rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 14px 18px; margin-bottom: 12px;">
                                 <tr>
                                     <td style="font-size: 12px; color: #94a3b8; line-height: 1.5;">
-                                        🔒 <strong>Protección Criptográfica:</strong> Al pulsar el botón, tu tarjeta física Tangem validará y firmará la transacción mediante chip NFC EAL6+, actualizando automáticamente tu adeudo en Notion.
+                                        ⚡ <strong>Elige tu método favorito:</strong> Puedes autorizar con hardware criptográfico <b>Tangem NFC</b>, pagar directo en la pasarela oficial de <b>Stripe Checkout</b> (Visa, Mastercard, AMEX, Apple Pay) o realizar transferencia <b>SPEI</b>. Tu estado en Notion se liquidará de inmediato.
                                     </td>
                                 </tr>
                             </table>
@@ -934,5 +942,148 @@ async def chat_goyapay(request: Request):
             }
     except Exception as e:
         return {"respuesta": f"Hubo un detalle al procesar la solicitud: {str(e)}", "error": str(e)}
+
+# 14. Endpoint: Crear Sesión Oficial en Stripe Checkout (Opción A)
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def crear_sesion_stripe(request: Request):
+    import stripe
+    import urllib.parse
+    
+    body = await request.json()
+    args = body.get("args", body)
+    
+    stripe_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    if not stripe_key:
+        return {"status": "error", "message": "STRIPE_SECRET_KEY no configurada en variables de entorno"}
+    
+    stripe.api_key = stripe_key
+    
+    page_id = args.get("page_id") or args.get("pago_id") or ""
+    concepto = args.get("concepto", "Trámite GoyaPay AI")
+    try:
+        monto = float(args.get("monto", 50.0))
+    except (ValueError, TypeError):
+        monto = 50.0
+        
+    email = args.get("email") or "coronahernandezs931@gmail.com"
+    base_checkout_url = os.environ.get("VERCEL_CHECKOUT_URL", "https://checkout-web-seven.vercel.app/checkout")
+    
+    try:
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'mxn',
+                    'product_data': {
+                        'name': f"GoyaPay: {concepto}",
+                        'description': f"Liquidación oficial de trámite UNAM / Negocio (ID: {page_id})",
+                    },
+                    'unit_amount': int(round(monto * 100)),
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            customer_email=email if (email and "@" in email) else None,
+            success_url=f"{base_checkout_url}?session_id={{CHECKOUT_SESSION_ID}}&page_id={page_id}&monto={monto}&concepto={urllib.parse.quote(concepto)}&email={urllib.parse.quote(email)}&stripe_success=true",
+            cancel_url=f"{base_checkout_url}?page_id={page_id}&monto={monto}&concepto={urllib.parse.quote(concepto)}&email={urllib.parse.quote(email)}&stripe_cancel=true",
+            metadata={
+                "page_id": page_id,
+                "concepto": concepto,
+                "monto": str(monto),
+                "email": email
+            }
+        )
+        return {
+            "status": "success",
+            "checkout_url": session.url,
+            "session_id": session.id
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# 15. Endpoint: Verificar Sesión de Stripe Checkout y Acreditar en Notion
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def verificar_sesion_stripe(request: Request):
+    import stripe
+    import requests
+    import resend
+    
+    body = await request.json()
+    args = body.get("args", body)
+    
+    stripe_key = os.environ.get("STRIPE_SECRET_KEY", "")
+    if not stripe_key:
+        return {"status": "error", "message": "STRIPE_SECRET_KEY no configurada"}
+    
+    stripe.api_key = stripe_key
+    session_id = args.get("session_id")
+    page_id = args.get("page_id") or ""
+    
+    if not session_id:
+        return {"status": "error", "message": "Falta el identificador session_id de Stripe"}
+        
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        if session.payment_status == 'paid':
+            meta = session.metadata or {}
+            target_page_id = page_id or meta.get("page_id")
+            concepto = meta.get("concepto") or "Trámite GoyaPay"
+            try:
+                monto = float(meta.get("monto") or (session.amount_total / 100.0))
+            except (ValueError, TypeError):
+                monto = session.amount_total / 100.0
+                
+            email = (session.customer_details.email if session.customer_details and session.customer_details.email else None) or meta.get("email") or "coronahernandezs931@gmail.com"
+            
+            # 1. Actualizar estado en Notion CRM
+            token = os.environ.get("NOTION_API_KEY")
+            headers = {
+                "Authorization": f"Bearer {token}",
+                "Notion-Version": "2022-06-28",
+                "Content-Type": "application/json"
+            }
+            if target_page_id:
+                patch_payload = {
+                    "properties": {
+                        "Estado": {"select": {"name": "pagado"}}
+                    }
+                }
+                requests.patch(f"https://api.notion.com/v1/pages/{target_page_id}", headers=headers, json=patch_payload)
+            
+            # 2. Enviar recibo por correo con Resend
+            try:
+                resend.api_key = os.environ.get("RESEND_API_KEY")
+                correo_agradecimiento = generar_html_correo_recibo(
+                    concepto=concepto,
+                    monto=monto,
+                    metodo_pago="Tarjeta Bancaria (Stripe Checkout Oficial)",
+                    detalle=f"Stripe ID: {session_id[-14:]} • Pago Aprobado",
+                    nombre_usuario="Sergio Ethan Corona Hernández"
+                )
+                resend.Emails.send({
+                    "from": "GoyaPay AI <onboarding@resend.dev>",
+                    "to": [email],
+                    "subject": f"✅ Comprobante de Pago Exitoso: {concepto} (Stripe)",
+                    "html": correo_agradecimiento
+                })
+            except Exception as e_mail:
+                print("Error enviando comprobante Stripe:", e_mail)
+                
+            return {
+                "status": "success",
+                "paid": True,
+                "session_id": session_id,
+                "page_id": target_page_id,
+                "concepto": concepto,
+                "monto": monto,
+                "customer_email": email
+            }
+        else:
+            return {"status": "pending", "paid": False, "payment_status": session.payment_status}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 
