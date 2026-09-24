@@ -582,7 +582,7 @@ def obtener_analisis_finanzas_negocio(db_id: str, token: str) -> dict:
 
 def obtener_analisis_zernio(api_key: str) -> dict:
     import requests
-    headers = {"Authorization": f"Bearer {api_key}"}
+    headers = {"Authorization": f"Bearer {(api_key or '').strip()}"}
     
     # 1. Cuentas conectadas
     r_acc = requests.get("https://zernio.com/api/v1/accounts", headers=headers)
@@ -802,6 +802,28 @@ async def chat_goyapay(request: Request):
         except Exception as e:
             return {"respuesta": f"Detalle al analizar finanzas: {str(e)}", "error": str(e)}
 
+    # Intención: Programar Video en Redes (Zernio API)
+    elif any(w in mensaje for w in ["programar video", "subir video", "publicar video", "programar publicación", "subir a tiktok", "subir a youtube", "programar tiktok", "programar youtube"]):
+        texto_resp = (
+            f"🎬 **Programador de Videos en Redes Sociales (Zernio API):**\n\n"
+            f"¡Puedes programar y publicar videos directamente en tus canales de TikTok (@flutter.py) y YouTube (@sergioethancoronahernandez)!\n\n"
+            f"1. Abre el modal pulsando el botón **'🎬 Programar Video'** en la barra de acciones superior de GoyaPay.\n"
+            f"2. Ingresa el título del video, su descripción con hashtags y la URL del archivo de video.\n"
+            f"3. Selecciona si deseas publicación inmediata o programada para una fecha y hora específica.\n\n"
+            f"🔗 [Acceder al Panel de Zernio](https://zernio.com/dashboard)"
+        )
+        return {"respuesta": texto_resp, "dashboard_url": "https://zernio.com/dashboard", "abrir_modal_video": True}
+
+    # Intención: Enlace directo al Panel de Zernio
+    elif any(w in mensaje for w in ["panel de zernio", "link de zernio", "abrir zernio", "dashboard zernio", "ver zernio", "entrar a zernio"]):
+        texto_resp = (
+            f"🌐 **Panel Oficial de Zernio:**\n\n"
+            f"Puedes acceder directamente a tu panel de control para gestionar publicaciones, auditar canales y revisar métricas detalladas en el siguiente enlace:\n\n"
+            f"👉 [Abrir Panel de Zernio](https://zernio.com/dashboard)\n\n"
+            f"*(También puedes pulsar el botón 'Ver Panel de Zernio ↗' en tu panel de GoyaPay)*."
+        )
+        return {"respuesta": texto_resp, "dashboard_url": "https://zernio.com/dashboard"}
+
     # Intención: Análisis de Cuentas Digitales y Contenidos (Zernio API)
     elif any(w in mensaje for w in ["red", "redes", "canal", "tiktok", "youtube", "zernio", "audiencia", "seguidor", "metricas", "vistas", "pipeline"]):
         try:
@@ -815,9 +837,10 @@ async def chat_goyapay(request: Request):
                 f"• **Reacciones & Likes:** {zer['total_likes']} likes ({zer['total_shares']} compartidos)\n"
                 f"• **Tasa de Interacción Media:** {zer['engagement_promedio_pct']}%\n"
                 f"• **Pipeline Activo:** {zer['posts_en_pipeline']} publicaciones programadas en cola.\n\n"
+                f"🔗 [Acceder a tu Panel de Zernio](https://zernio.com/dashboard)\n\n"
                 f"🚀 **Diagnóstico:** {zer['diagnostico_audiencia']}"
             )
-            return {"respuesta": texto_resp, "analisis_cuentas": zer}
+            return {"respuesta": texto_resp, "analisis_cuentas": zer, "dashboard_url": "https://zernio.com/dashboard"}
         except Exception as e:
             return {"respuesta": f"Detalle al consultar Zernio: {str(e)}", "error": str(e)}
 
@@ -1084,6 +1107,112 @@ async def verificar_sesion_stripe(request: Request):
             return {"status": "pending", "paid": False, "payment_status": session.payment_status}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+# 16. Endpoint: Programar Publicación de Video en Redes Sociales (Zernio API)
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def programar_video_zernio(request: Request):
+    import requests
+    import os
+    import datetime
+    
+    body = await request.json()
+    args = body.get("args", body)
+    
+    zernio_key = (os.environ.get("ZERNIO_API_KEY") or "").strip()
+    if not zernio_key:
+        return {"status": "error", "message": "ZERNIO_API_KEY no configurada"}
+        
+    title = args.get("title", "Video GoyaPay AI")
+    content = args.get("content", "Demostración de pago con Cold Wallet Tangem y GoyaPay AI #fintech #automation")
+    video_url = args.get("video_url") or "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+    platforms_input = args.get("platforms", ["tiktok", "youtube"])
+    scheduled_for = args.get("scheduled_for")
+    publish_now = args.get("publish_now", False)
+    
+    headers = {
+        "Authorization": f"Bearer {zernio_key}",
+        "Content-Type": "application/json"
+    }
+    
+    # Obtener mapeo de cuentas Zernio
+    cuentas_map = {
+        "tiktok": "6a0680525e333c05296e9803",
+        "youtube": "6a0fd0a1520992756d99119e"
+    }
+    try:
+        r_acc = requests.get("https://zernio.com/api/v1/accounts", headers=headers, timeout=10)
+        if r_acc.status_code == 200:
+            for acc in r_acc.json().get("accounts", []):
+                plt = acc.get("platform")
+                acc_id = acc.get("_id") or acc.get("id")
+                if plt and acc_id:
+                    cuentas_map[plt] = acc_id
+    except Exception as e_acc:
+        print("Warning obteniendo cuentas Zernio:", e_acc)
+        
+    platforms_payload = []
+    for p in platforms_input:
+        if isinstance(p, dict):
+            platforms_payload.append(p)
+        elif isinstance(p, str):
+            p_lower = p.lower()
+            if p_lower in cuentas_map:
+                platforms_payload.append({
+                    "platform": p_lower,
+                    "accountId": cuentas_map[p_lower]
+                })
+                
+    if not platforms_payload:
+        platforms_payload = [
+            {"platform": "tiktok", "accountId": cuentas_map.get("tiktok", "6a0680525e333c05296e9803")},
+            {"platform": "youtube", "accountId": cuentas_map.get("youtube", "6a0fd0a1520992756d99119e")}
+        ]
+        
+    post_payload = {
+        "title": title,
+        "content": content,
+        "mediaItems": [{"type": "video", "url": video_url}],
+        "platforms": platforms_payload,
+        "visibility": "public"
+    }
+    
+    if publish_now or not scheduled_for or scheduled_for == "now":
+        post_payload["publishNow"] = True
+    else:
+        try:
+            if "T" in scheduled_for and not scheduled_for.endswith("Z"):
+                scheduled_for = scheduled_for + ":00.000Z" if len(scheduled_for) == 16 else scheduled_for + ".000Z"
+        except Exception:
+            pass
+        post_payload["scheduledFor"] = scheduled_for
+        post_payload["timezone"] = "America/Mexico_City"
+        post_payload["status"] = "scheduled"
+        
+    try:
+        resp = requests.post("https://zernio.com/api/v1/posts", headers=headers, json=post_payload, timeout=20)
+        res_data = resp.json() if resp.status_code in [200, 201] else {}
+        
+        if resp.status_code in [200, 201]:
+            post_obj = res_data.get("post", {})
+            post_id = post_obj.get("_id") or post_obj.get("id") or "ok"
+            return {
+                "status": "success",
+                "message": res_data.get("message", "Post procesado exitosamente"),
+                "post_id": post_id,
+                "scheduled_for": post_obj.get("scheduledFor") or ("Inmediato" if publish_now else scheduled_for),
+                "platforms": [p["platform"] for p in platforms_payload],
+                "dashboard_url": "https://zernio.com/dashboard"
+            }
+        else:
+            return {
+                "status": "error",
+                "status_code": resp.status_code,
+                "message": resp.text
+            }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 
 
