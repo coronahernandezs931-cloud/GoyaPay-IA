@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoyaPay AI — Simulador de Voz y Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/retell-bundle.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .pulse-ring {
+            box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+            animation: pulse 2s infinite cubic-bezier(0.66, 0, 0, 1);
+        }
+        @keyframes pulse {
+            to { box-shadow: 0 0 0 35px rgba(59, 130, 246, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-4 md:p-8 flex flex-col items-center justify-center">
+
+    <div class="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Columna Izquierda: Simulador de Voz -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl relative flex flex-col justify-between">
+            <div>
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-white">GoyaPay AI Voice</h1>
+                        <p class="text-xs text-slate-400">Simulador Web Call con Retell AI</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/70 rounded-2xl p-4 border border-slate-800/80 mb-5 space-y-3">
+                    <div>
+                        <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Nombre del Usuario</label>
+                        <input id="userName" type="text" value="Sergio Ethan Corona Hernández" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 mt-1 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Teléfono Registrado</label>
+                        <input id="userPhone" type="text" value="7772310427" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 mt-1 focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Correo para Enlace de Pago</label>
+                        <input id="userEmail" type="email" value="coronahernandezs931@gmail.com" placeholder="correo@ejemplo.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-200 mt-1 focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <!-- Botón de Estado de Llamada -->
+                <div class="flex flex-col items-center justify-center my-6">
+                    <button id="callBtn" onclick="toggleCall()" class="w-24 h-24 rounded-full bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center shadow-2xl transition duration-300 transform active:scale-95">
+                        <svg id="callIcon" class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                    </button>
+                    <p id="callStatus" class="text-xs text-slate-400 mt-4 font-medium">Haz clic para iniciar la llamada de voz</p>
+                </div>
+            </div>
+
+            <div id="liveTranscriptBox" class="bg-slate-950/60 border border-slate-800 rounded-2xl p-3 text-xs text-slate-300 min-h-[90px] max-h-[140px] overflow-y-auto">
+                <span class="text-slate-500 italic block mb-1">Transcripción en vivo:</span>
+                <div id="liveTranscript" class="space-y-1">Esperando llamada...</div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Panel de Integración en Tiempo Real -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Estado del Ecosistema
+                    </h2>
+                    <span class="text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">Modal + Notion + Zernio</span>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl">
+                        <div class="text-[11px] text-slate-400 font-semibold uppercase">1. Gestión Financiera & Gastos (Notion CRM)</div>
+                        <p class="text-xs text-slate-300 mt-1">Registra cobros y analiza los gastos operativos del negocio.</p>
+                        <div class="mt-2 text-[11px] font-mono bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-slate-300 flex justify-between">
+                            <span>Cobrado / Adeudos:</span>
+                            <div>
+                                <span class="text-emerald-400 font-bold">$1,415</span> / <span class="text-amber-400 font-bold">$370 MXN</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl">
+                        <div class="text-[11px] text-slate-400 font-semibold uppercase">2. Cuentas Digitales & Difusión (Zernio API)</div>
+                        <p class="text-xs text-slate-300 mt-1">Analítica unificada de TikTok y YouTube con pipeline de contenidos.</p>
+                        <div class="mt-2 text-[11px] font-mono bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-slate-300 flex justify-between">
+                            <span>Vistas / Pipeline:</span>
+                            <span class="text-indigo-400 font-bold">5,107 vistas • 111 posts</span>
+                        </div>
+                        <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
+                            <a href="https://zernio.com/dashboard" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] text-purple-400 hover:text-purple-300 font-semibold underline">
+                                <span>Ver Panel de Zernio ↗</span>
+                            </a>
+                            <span class="text-slate-600 text-xs">•</span>
+                            <button onclick="abrirModalProgramarVideo()" class="inline-flex items-center gap-1 text-[11px] text-pink-400 hover:text-pink-300 font-semibold underline">
+                                <span>🎬 Programar Video &rarr;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl">
+                        <div class="text-[11px] text-slate-400 font-semibold uppercase">3. Pasarela Multibanco & Tangem</div>
+                        <p class="text-xs text-slate-300 mt-1">Liquidación con Cold Wallet NFC Tangem, SPEI Interbancario o Tarjeta.</p>
+                        <a href="/checkout?page_id=3e549bc5-0aa5-8109-bd08-c8a1ebf5f1b4&concepto=Reposici%C3%B3n+Credencial+de+Acceso+y+Biblioteca&monto=120.00" target="_blank" class="mt-2 inline-flex items-center text-[11px] text-blue-400 hover:text-blue-300 underline font-medium">
+                            Abrir Checkout Multibanco (Tangem / SPEI / Tarjeta) &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-800 text-center">
+                <p class="text-xs text-slate-400">GoyaPay AI • Business Manager & Multi-Bank Platform</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SECCIÓN BUSINESS MANAGER: CENTRO DE CONTROL DEL NEGOCIO -->
+    <div class="max-w-4xl w-full mx-auto mt-6">
+        <div class="bg-slate-900/90 border border-indigo-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden backdrop-blur-md">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 text-lg">
+                        💼
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            GoyaPay Business Manager
+                            <span class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-full font-medium">Panel Ejecutivo</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Analizador integral de finanzas (Notion) y cuentas digitales (Zernio API)</p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap gap-1.5 items-center">
+                    <button onclick="ejecutarAnalisisNegocio('finanzas')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1 transition">
+                        <span>📊 Finanzas</span>
+                    </button>
+                    <button onclick="ejecutarAnalisisNegocio('cuentas')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1 transition">
+                        <span>🌐 Zernio</span>
+                    </button>
+                    <button onclick="ejecutarAnalisisNegocio('resumen')" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-blue-500/20 flex items-center gap-1 transition">
+                        <span>⚡ Reporte 360°</span>
+                    </button>
+                    <button onclick="abrirModalProgramarVideo()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white text-xs font-bold shadow-lg shadow-pink-500/20 flex items-center gap-1.5 transition">
+                        <span>🎬 Programar Video</span>
+                    </button>
+                    <a href="https://zernio.com/dashboard" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-500/40 text-xs font-bold flex items-center gap-1.5 transition">
+                        <span>Ver Panel de Zernio ↗</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Métricas KPI en Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 my-4">
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Ingresos Cobrados</span>
+                    <p id="kpiCobrado" class="text-lg font-extrabold text-emerald-400 mt-0.5">$1,415.00</p>
+                    <span class="text-[10px] text-emerald-500/80">12 pagos liquidados</span>
+                </div>
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Adeudos Pendientes</span>
+                    <p id="kpiPendiente" class="text-lg font-extrabold text-amber-400 mt-0.5">$370.00</p>
+                    <span class="text-[10px] text-amber-400/80">2 trámites activos</span>
+                </div>
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Canales Zernio</span>
+                    <p id="kpiCanales" class="text-lg font-extrabold text-purple-400 mt-0.5">2 Canales</p>
+                    <span class="text-[10px] text-purple-400/80">TikTok & YouTube</span>
+                </div>
+                <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Alcance & Pipeline</span>
+                    <p id="kpiPipeline" class="text-lg font-extrabold text-indigo-400 mt-0.5">5,107 vistas</p>
+                    <span class="text-[10px] text-indigo-400/80">111 posts en pipeline</span>
+                </div>
+            </div>
+
+            <!-- Caja de Resultados de Diagnóstico Dinámico -->
+            <div id="boxDiagnosticoNegocio" class="hidden bg-slate-950/90 border border-slate-800 p-3.5 rounded-2xl text-xs text-slate-300 space-y-2">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-1.5">
+                    <span id="diagTitulo" class="font-bold text-white text-xs">Diagnóstico del Negocio</span>
+                    <span id="diagBadge" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full text-[10px] font-mono">En Tiempo Real</span>
+                </div>
+                <div id="diagContenido" class="leading-relaxed whitespace-pre-line text-slate-200">
+                    Cargando análisis...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN CHAT ALTERNATIVO (HASTA ABAJO) -->
+    <div class="max-w-4xl w-full mx-auto mt-6">
+        <div class="glass-card rounded-3xl p-6 sm:p-7 border border-blue-500/20 shadow-2xl relative overflow-hidden bg-slate-900/60">
+            <div class="absolute -right-20 -bottom-20 w-72 h-72 bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/30">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            Chat con Sofía (GoyaPay Assistant)
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-medium">Asistente 24/7</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Consulta adeudos, liquida trámites o analiza las finanzas y cuentas de tu negocio.</p>
+                    </div>
+                </div>
+
+                <!-- Chips rápidos -->
+                <div class="flex flex-wrap gap-1.5 text-xs">
+                    <button onclick="abrirModalProgramarVideo()" class="px-2.5 py-1 rounded-full bg-pink-600/30 hover:bg-pink-600/50 text-pink-300 border border-pink-500/40 transition">🎬 Programar Video</button>
+                    <a href="https://zernio.com/dashboard" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/40 transition inline-flex items-center gap-1">🌐 Panel Zernio ↗</a>
+                    <button onclick="sendQuickMessage('Analizar las finanzas del negocio')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">💼 Finanzas Negocio</button>
+                    <button onclick="sendQuickMessage('Analizar las cuentas y redes de mi negocio con Zernio')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">🌐 Cuentas Zernio</button>
+                    <button onclick="sendQuickMessage('Resumen general del negocio')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">🏢 Resumen 360°</button>
+                    <button onclick="sendQuickMessage('¿Cuáles son mis adeudos pendientes?')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">📋 Adeudos</button>
+                </div>
+            </div>
+
+            <!-- Ventana de Mensajes -->
+            <div id="chatMessages" class="my-4 h-64 overflow-y-auto space-y-3 pr-2 text-sm">
+                <div class="flex items-start gap-2.5">
+                    <div class="w-7 h-7 rounded-full bg-blue-600/30 border border-blue-500/30 flex items-center justify-center text-xs text-blue-300 font-bold shrink-0">S</div>
+                    <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl rounded-tl-none p-3 max-w-xl text-slate-200">
+                        ¡Hola! Soy Sofía de GoyaPay AI Business. Puedo gestionar cobros y adeudos con Tangem Cold Wallet, SPEI o Tarjeta, y también **analizar las finanzas de tu negocio** o el rendimiento de tus **cuentas digitales conectadas en Zernio**. ¿Qué deseas consultar hoy?
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input bar -->
+            <form onsubmit="handleChatSubmit(event)" class="flex gap-2 items-center pt-2 border-t border-slate-800/80">
+                <input id="chatInput" type="text" placeholder="Escribe tu mensaje... (ej: 'Analizar finanzas del negocio' o 'Pagar el 1')" class="flex-1 bg-slate-950/80 border border-slate-800 focus:border-blue-500 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition">
+                <button type="submit" id="chatSendBtn" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition flex items-center gap-1.5 shadow-lg shadow-blue-500/20 disabled:opacity-50">
+                    <span>Enviar</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let retellClient = null;
+        let isCalling = false;
+
+        async function toggleCall() {
+            const btn = document.getElementById('callBtn');
+            const status = document.getElementById('callStatus');
+            const transcript = document.getElementById('liveTranscript');
+
+            if (isCalling) {
+                if (retellClient) {
+                    retellClient.stopCall();
+                }
+                resetCallUI();
+                return;
+            }
+
+            const userName = document.getElementById('userName').value.trim();
+            const userPhone = document.getElementById('userPhone').value.trim();
+            const userEmail = document.getElementById('userEmail').value.trim() || 'coronahernandezs931@gmail.com';
+
+            status.textContent = "Conectando con GoyaPay AI...";
+            btn.classList.add('pulse-ring', 'bg-amber-600');
+
+            try {
+                // Registrar web call de forma 100% segura mediante backend serverless proxy (Zero Secrets en Frontend)
+                const resp = await fetch('https://coronahernandezs931--goyapay-voice-backend-crear-web-call.modal.run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        agent_id: 'agent_14126a001a6e0fb2438a6765ed',
+                        retell_llm_dynamic_variables: {
+                            user_name: userName,
+                            user_phone: userPhone,
+                            user_email: userEmail
+                        }
+                    })
+                });
+
+                const data = await resp.json();
+                if (!resp.ok || !data.access_token) {
+                    throw new Error(data.message || "Error al generar sesión de llamada.");
+                }
+
+                const ClientClass = window.RetellWebClient 
+                    || (window.retellClientJsSdk && window.retellClientJsSdk.RetellWebClient) 
+                    || (window.Retell && window.Retell.RetellWebClient);
+
+                if (!ClientClass) {
+                    throw new Error("No se pudo cargar la librería de audio RetellWebClient.");
+                }
+
+                retellClient = new ClientClass();
+
+                retellClient.on("call_started", () => {
+                    isCalling = true;
+                    btn.classList.remove('bg-amber-600', 'bg-blue-600');
+                    btn.classList.add('bg-red-600');
+                    status.textContent = "Llamada activa. ¡Habla con GoyaPay!";
+                    transcript.innerHTML = '<span class="text-emerald-400">Llamada conectada en vivo.</span>';
+                });
+
+                retellClient.on("call_ended", () => {
+                    resetCallUI();
+                    transcript.innerHTML += '<br><span class="text-slate-400">Llamada finalizada.</span>';
+                });
+
+                retellClient.on("update", (update) => {
+                    if (update && update.transcript) {
+                        const turns = update.transcript;
+                        if (turns.length > 0) {
+                            transcript.innerHTML = turns.map(t => `<p><b class="${t.role === 'agent' ? 'text-blue-400' : 'text-slate-200'}">${t.role === 'agent' ? 'GoyaPay' : 'Tú'}:</b> ${t.content}</p>`).join('');
+                            const box = document.getElementById('liveTranscriptBox');
+                            box.scrollTop = box.scrollHeight;
+                        }
+                    }
+                });
+
+                retellClient.on("error", (err) => {
+                    console.error("Retell Error:", err);
+                    status.textContent = "Error en la conexión.";
+                    resetCallUI();
+                });
+
+                await retellClient.startCall({ accessToken: data.access_token });
+
+            } catch (err) {
+                console.error(err);
+                alert("Error al iniciar llamada: " + err.message);
+                resetCallUI();
+            }
+        }
+
+        function resetCallUI() {
+            isCalling = false;
+            const btn = document.getElementById('callBtn');
+            const status = document.getElementById('callStatus');
+            btn.classList.remove('pulse-ring', 'bg-red-600', 'bg-amber-600');
+            btn.classList.add('bg-blue-600');
+            status.textContent = "Haz clic para iniciar la llamada de voz";
+        }
+
+        // ==========================================
+        // FUNCIONALIDAD DE CHAT ALTERNATIVO (MODAL)
+        // ==========================================
+        function appendChatMessage(sender, text, isUser = false, checkoutData = null) {
+            const container = document.getElementById('chatMessages');
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex items-start gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`;
+
+            const avatar = document.createElement('div');
+            avatar.className = `w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+                isUser 
+                    ? 'bg-purple-600 text-white shadow-md shadow-purple-500/30' 
+                    : 'bg-blue-600/30 border border-blue-500/30 text-blue-300'
+            }`;
+            avatar.textContent = isUser ? 'Tú' : 'S';
+
+            const bubble = document.createElement('div');
+            bubble.className = `rounded-2xl p-3 max-w-xl text-sm leading-relaxed ${
+                isUser 
+                    ? 'bg-blue-600 text-white rounded-tr-none shadow-lg shadow-blue-600/20' 
+                    : 'bg-slate-800/80 border border-slate-700/60 rounded-tl-none text-slate-200'
+            }`;
+
+            // Formatear saltos de línea
+            let formattedText = text.replace(/\n/g, '<br>');
+            bubble.innerHTML = formattedText;
+
+            // Si hay botón de checkout directo
+            if (checkoutData && checkoutData.checkout_url) {
+                const btnBox = document.createElement('div');
+                btnBox.className = "mt-3 pt-3 border-t border-slate-700/50 flex flex-wrap gap-2";
+                btnBox.innerHTML = `
+                    <a href="${checkoutData.checkout_url}" target="_blank" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold text-xs px-4 py-2 rounded-xl shadow-lg shadow-emerald-500/20 transition">
+                        <span>📲 Pagar con Tangem Cold Wallet (${checkoutData.monto ? '$' + checkoutData.monto + ' MXN' : 'Abrir'})</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                `;
+                bubble.appendChild(btnBox);
+            }
+
+            wrapper.appendChild(avatar);
+            wrapper.appendChild(bubble);
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function sendQuickMessage(text) {
+            document.getElementById('chatInput').value = text;
+            await executeChatMessage(text);
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            await executeChatMessage(text);
+        }
+
+        async function executeChatMessage(text) {
+            const userPhone = document.getElementById('userPhone').value.trim() || '7772310427';
+            const userEmail = document.getElementById('userEmail').value.trim() || 'coronahernandezs931@gmail.com';
+            const sendBtn = document.getElementById('chatSendBtn');
+
+            appendChatMessage('Tú', text, true);
+            sendBtn.disabled = true;
+
+            // Loading bubble
+            const loadingId = 'loading-' + Date.now();
+            const container = document.getElementById('chatMessages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex items-center gap-2 text-xs text-slate-400 pl-9';
+            loadingDiv.innerHTML = '<span class="inline-block w-2 h-2 rounded-full bg-blue-400 animate-ping"></span> Sofía está consultando Notion...';
+            container.appendChild(loadingDiv);
+            container.scrollTop = container.scrollHeight;
+
+            try {
+                const resp = await fetch('https://coronahernandezs931--goyapay-voice-backend-chat-goyapay.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mensaje: text,
+                        user_phone: userPhone,
+                        user_email: userEmail
+                    })
+                });
+
+                const data = await resp.json();
+                const loader = document.getElementById(loadingId);
+                if (loader) loader.remove();
+
+                if (data && data.respuesta) {
+                    let checkoutData = null;
+                    if (data.checkout_url) {
+                        checkoutData = {
+                            checkout_url: data.checkout_url,
+                            concepto: data.concepto,
+                            monto: data.monto
+                        };
+                    }
+                    appendChatMessage('Sofía', data.respuesta, false, checkoutData);
+                    if (data.abrir_modal_video) {
+                        abrirModalProgramarVideo();
+                    }
+                } else {
+                    appendChatMessage('Sofía', 'Disculpa, no pude procesar la consulta en este momento.');
+                }
+            } catch (err) {
+                console.error(err);
+                const loader = document.getElementById(loadingId);
+                if (loader) loader.remove();
+                appendChatMessage('Sofía', 'Ocurrió un error de red al contactar al servidor: ' + err.message);
+            } finally {
+                sendBtn.disabled = false;
+            }
+        }
+
+        // ==========================================
+        // FUNCIONALIDAD BUSINESS MANAGER (NOTION + ZERNIO)
+        // ==========================================
+        async function ejecutarAnalisisNegocio(tipo) {
+            const box = document.getElementById('boxDiagnosticoNegocio');
+            const titulo = document.getElementById('diagTitulo');
+            const badge = document.getElementById('diagBadge');
+            const contenido = document.getElementById('diagContenido');
+
+            box.classList.remove('hidden');
+            contenido.innerHTML = '<span class="inline-block w-2 h-2 rounded-full bg-indigo-400 animate-ping mr-2"></span> Consultando métricas en tiempo real...';
+
+            let endpoint = '';
+            if (tipo === 'finanzas') {
+                titulo.textContent = "📊 Análisis de Finanzas & Gastos (Notion CRM)";
+                badge.textContent = "Notion DB Live";
+                endpoint = 'https://coronahernandezs931--goyapay-voice-backend-analizar-fina-0d5360.modal.run';
+            } else if (tipo === 'cuentas') {
+                titulo.textContent = "🌐 Rendimiento de Cuentas Digitales (Zernio API)";
+                badge.textContent = "Zernio Omnichannel";
+                endpoint = 'https://coronahernandezs931--goyapay-voice-backend-analizar-cuen-4a2b0c.modal.run';
+            } else {
+                titulo.textContent = "🏢 Diagnóstico Ejecutivo 360° del Negocio";
+                badge.textContent = "Auditoría Sofía IA";
+                endpoint = 'https://coronahernandezs931--goyapay-voice-backend-resumen-admin-ef845b.modal.run';
+            }
+
+            try {
+                const resp = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await resp.json();
+
+                if (tipo === 'finanzas' && data.analisis) {
+                    const f = data.analisis;
+                    document.getElementById('kpiCobrado').textContent = `$${f.total_cobrado.toFixed(2)}`;
+                    document.getElementById('kpiPendiente').textContent = `$${f.total_pendiente.toFixed(2)}`;
+                    contenido.innerHTML = `<b>Salud Financiera:</b> <span class="text-emerald-400 font-bold">${f.salud_financiera}</span>\n` +
+                        `• <b>Ingresos Recaudados:</b> $${f.total_cobrado.toFixed(2)} MXN (${f.num_pagados} operaciones)\n` +
+                        `• <b>Gastos / Adeudos Pendientes:</b> $${f.total_pendiente.toFixed(2)} MXN\n` +
+                        `• <b>Balance Neto Operativo:</b> +$${f.balance_neto.toFixed(2)} MXN (${f.tasa_cobranza_pct}% cobranza efectiva)\n` +
+                        `• <b>Ticket Promedio:</b> $${f.ticket_promedio.toFixed(2)} MXN\n\n` +
+                        `💡 <i>${f.diagnostico}</i>`;
+                } else if (tipo === 'cuentas' && data.analisis) {
+                    const z = data.analisis;
+                    document.getElementById('kpiCanales').textContent = `${z.total_canales} Canales`;
+                    document.getElementById('kpiPipeline').textContent = `${z.total_vistas.toLocaleString()} vistas`;
+                    let canalesList = z.canales_activos.map(c => `• <b>${c.plataforma.toUpperCase()}:</b> @${c.username} (${c.seguidores} seguidores)`).join('\n');
+                    contenido.innerHTML = `<b>Canales Conectados (${z.total_canales}):</b>\n${canalesList}\n\n` +
+                        `• <b>Visualizaciones Totales:</b> ${z.total_vistas.toLocaleString()} vistas orgánicas\n` +
+                        `• <b>Reacciones & Likes:</b> ${z.total_likes} likes | ${z.total_shares} compartidos\n` +
+                        `• <b>Tasa de Interacción Media:</b> ${z.engagement_promedio_pct}%\n` +
+                        `• <b>Pipeline Automatizado:</b> ${z.posts_en_pipeline} publicaciones programadas en cola.\n\n` +
+                        `🚀 <i>${z.diagnostico_audiencia}</i>`;
+                } else if (data.resumen_ejecutivo) {
+                    const f = data.finanzas || {};
+                    const z = data.cuentas_digitales || {};
+                    contenido.innerHTML = `<b>Resumen Ejecutivo para Sergio Ethan Corona Hernández:</b>\n\n` +
+                        `💰 <b>Eje Financiero:</b> $${(f.total_cobrado||0).toFixed(2)} MXN cobrados con 100% de efectividad de cobranza. Balance neto positivo.\n` +
+                        `🌐 <b>Eje Digital (Zernio):</b> Presencia activa en TikTok (@flutter.py) y YouTube, con ${(z.total_vistas||0).toLocaleString()} vistas acumuladas y ${z.posts_en_pipeline||0} contenidos programados.\n\n` +
+                        `✅ <i>Veredicto IA: El negocio se encuentra en una posición financiera sólida con un flujo de contenido digital constante y automatizado.</i>`;
+                } else {
+                    contenido.textContent = JSON.stringify(data, null, 2);
+                }
+            } catch (err) {
+                contenido.textContent = "Error al consultar el servicio: " + err.message;
+            }
+        }
+
+        // ==========================================
+        // FUNCIONES MODAL PROGRAMADOR DE VIDEO (ZERNIO API)
+        // ==========================================
+        function abrirModalProgramarVideo() {
+            const modal = document.getElementById('modalVideoZernio');
+            modal.classList.remove('hidden');
+            const now = new Date();
+            now.setHours(now.getHours() + 1);
+            const dtString = now.toISOString().slice(0, 16);
+            const fechaInput = document.getElementById('inputFechaProgramada');
+            if (fechaInput) {
+                fechaInput.min = new Date().toISOString().slice(0, 16);
+                fechaInput.value = dtString;
+            }
+        }
+
+        function cerrarModalProgramarVideo() {
+            const modal = document.getElementById('modalVideoZernio');
+            modal.classList.add('hidden');
+        }
+
+        function toggleProgramarFecha() {
+            const isSchedule = document.querySelector('input[name="timingOpt"][value="schedule"]').checked;
+            const box = document.getElementById('boxFechaHora');
+            if (isSchedule) {
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+            }
+        }
+
+        async function enviarProgramarVideo(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitVideo');
+            const resBox = document.getElementById('videoResultadoBox');
+
+            const titulo = document.getElementById('videoTitulo').value.trim();
+            const contenido = document.getElementById('videoContenido').value.trim();
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            const chkTikTok = document.getElementById('chkTikTok').checked;
+            const chkYouTube = document.getElementById('chkYouTube').checked;
+            const isSchedule = document.querySelector('input[name="timingOpt"][value="schedule"]').checked;
+            const fechaHora = document.getElementById('inputFechaProgramada').value;
+
+            const platforms = [];
+            if (chkTikTok) platforms.push('tiktok');
+            if (chkYouTube) platforms.push('youtube');
+
+            if (platforms.length === 0) {
+                alert("Debes seleccionar al menos una plataforma (TikTok o YouTube).");
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-white animate-ping mr-2"></span> Conectando con Zernio...';
+            resBox.classList.remove('hidden');
+            resBox.className = "p-3 rounded-2xl text-xs bg-slate-950 border border-slate-800 text-slate-300";
+            resBox.innerHTML = 'Enviando post a la API de Zernio...';
+
+            const payload = {
+                title: titulo,
+                content: contenido,
+                video_url: videoUrl,
+                platforms: platforms,
+                publish_now: !isSchedule,
+                scheduled_for: isSchedule ? fechaHora : null
+            };
+
+            try {
+                const resp = await fetch('https://coronahernandezs931--goyapay-voice-backend-programar-vid-b04cd0.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await resp.json();
+
+                if (data.status === 'success') {
+                    resBox.className = "p-3.5 rounded-2xl text-xs bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 space-y-1.5";
+                    resBox.innerHTML = `
+                        <div class="flex items-center gap-1.5 font-bold text-white">
+                            <span class="text-base">✅</span> ¡Publicación procesada exitosamente en Zernio!
+                        </div>
+                        <p><b>Post ID:</b> <code class="text-emerald-300 font-mono">${data.post_id}</code></p>
+                        <p><b>Destinos:</b> ${data.platforms.map(p => p.toUpperCase()).join(' & ')}</p>
+                        <p><b>Programación:</b> ${data.scheduled_for}</p>
+                        <div class="pt-1.5 flex gap-2">
+                            <a href="${data.dashboard_url || 'https://zernio.com/dashboard'}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px]">
+                                <span>Ver en Panel de Zernio ↗</span>
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    resBox.className = "p-3 rounded-2xl text-xs bg-rose-950/60 border border-rose-500/40 text-rose-200";
+                    resBox.innerHTML = `<b>Error al programar en Zernio:</b> ${data.message || JSON.stringify(data)}`;
+                }
+            } catch (err) {
+                resBox.className = "p-3 rounded-2xl text-xs bg-rose-950/60 border border-rose-500/40 text-rose-200";
+                resBox.innerHTML = `<b>Error de conexión:</b> ${err.message}`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🚀 Programar en Zernio</span>';
+            }
+        }
+    </script>
+
+    <!-- ============================================== -->
+    <!-- MODAL: PROGRAMAR VIDEO EN REDES (ZERNIO API)   -->
+    <!-- ============================================== -->
+    <div id="modalVideoZernio" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
+        <div class="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
+            <!-- Header Modal -->
+            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-600 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-pink-500/30 text-lg">
+                        🎬
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            Programar Video en Redes
+                            <span class="text-[10px] bg-pink-500/20 text-pink-300 border border-pink-500/30 px-2 py-0.5 rounded-full font-medium">Zernio API</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Publicación en TikTok (@flutter.py) y YouTube</p>
+                    </div>
+                </div>
+                <button type="button" onclick="cerrarModalProgramarVideo()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Formulario de Programación -->
+            <form id="formProgramarVideo" onsubmit="enviarProgramarVideo(event)" class="space-y-4 mt-4">
+                <!-- Título -->
+                <div>
+                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1">Título del Video</label>
+                    <input id="videoTitulo" type="text" required value="🚀 GoyaPay AI: Pagos Autónomos por Voz y Cold Wallet Tangem" placeholder="Ej: Demo GoyaPay en Vivo" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition">
+                </div>
+
+                <!-- Descripción & Hashtags -->
+                <div>
+                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1">Descripción y Hashtags</label>
+                    <textarea id="videoContenido" rows="3" required placeholder="Escribe el texto de tu publicación y hashtags..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition">Demostración de liquidación instantánea de adeudos universitarios y gestión financiera de negocio con GoyaPay AI, hardware NFC Tangem y Stripe #fintech #ai #goyapay #web3 #tangem #automation</textarea>
+                </div>
+
+                <!-- URL del Archivo de Video -->
+                <div>
+                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1">URL Directa del Video (MP4)</label>
+                    <input id="videoUrl" type="url" required value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" placeholder="https://dominio.com/tu-video.mp4" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pink-500 transition">
+                    <span class="text-[10px] text-slate-400 mt-1 block">Compatible con enlaces directos MP4 o buckets CDN.</span>
+                </div>
+
+                <!-- Selección de Canales Conectados -->
+                <div>
+                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1.5">Publicar en Canales Conectados:</label>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <label class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                            <input type="checkbox" id="chkTikTok" value="tiktok" checked class="w-4 h-4 rounded text-pink-600 focus:ring-0 bg-slate-900 border-slate-700">
+                            <div>
+                                <span class="text-xs font-bold text-white block">TikTok</span>
+                                <span class="text-[10px] text-slate-400 block font-mono">@flutter.py</span>
+                            </div>
+                        </label>
+                        <label class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+                            <input type="checkbox" id="chkYouTube" value="youtube" checked class="w-4 h-4 rounded text-rose-600 focus:ring-0 bg-slate-900 border-slate-700">
+                            <div>
+                                <span class="text-xs font-bold text-white block">YouTube</span>
+                                <span class="text-[10px] text-slate-400 block font-mono truncate max-w-[110px]">@sergioethan</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Momento de Envío: Inmediato vs Programado -->
+                <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl space-y-2.5">
+                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block">Momento de Publicación</label>
+                    <div class="flex gap-4 text-xs text-slate-200">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="timingOpt" value="now" checked onchange="toggleProgramarFecha()" class="text-pink-600 focus:ring-0 bg-slate-900 border-slate-700">
+                            <span>Publicar de inmediato (Publish Now)</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="radio" name="timingOpt" value="schedule" onchange="toggleProgramarFecha()" class="text-pink-600 focus:ring-0 bg-slate-900 border-slate-700">
+                            <span>Programar fecha</span>
+                        </label>
+                    </div>
+
+                    <div id="boxFechaHora" class="hidden pt-2 border-t border-slate-800/80">
+                        <label class="text-[10px] text-slate-400 block mb-1">Fecha y Hora de Publicación (Zona horaria México):</label>
+                        <input id="inputFechaProgramada" type="datetime-local" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
+                    </div>
+                </div>
+
+                <!-- Mensaje de Resultado -->
+                <div id="videoResultadoBox" class="hidden p-3 rounded-2xl text-xs space-y-1"></div>
+
+                <!-- Botones de Acción -->
+                <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
+                    <button type="button" onclick="cerrarModalProgramarVideo()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" id="btnSubmitVideo" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 active:scale-[0.98] text-white text-xs font-bold shadow-lg shadow-pink-500/20 flex items-center gap-2 transition">
+                        <span>🚀 Programar en Zernio</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

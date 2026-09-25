@@ -1,0 +1,19 @@
+{
+  "name": "checkout-web",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@walletconnect/sign-client": "^2.25.0",
+    "esbuild": "^0.28.2",
+    "qrcode": "^1.5.4",
+    "retell-client-js-sdk": "^3.0.1"
+  }
+}

@@ -1214,5 +1214,38 @@ async def programar_video_zernio(request: Request):
         return {"status": "error", "message": str(e)}
 
 
-
-
+# 17. Endpoint: Crear Web Call con Retell AI (Proxy Seguro sin exponer API Key en Frontend)
+@app.function(image=image, secrets=[goyapay_secret])
+@modal.fastapi_endpoint(method="POST")
+async def crear_web_call(request: Request):
+    import requests
+    
+    body = await request.json()
+    args = body.get("args", body)
+    
+    retell_key = (os.environ.get("RETELL_API_KEY") or "").strip()
+    if not retell_key:
+        return {"status": "error", "message": "RETELL_API_KEY no configurada en variables de entorno"}
+        
+    agent_id = args.get("agent_id") or os.environ.get("RETELL_AGENT_ID") or "agent_14126a001a6e0fb2438a6765ed"
+    dynamic_vars = args.get("retell_llm_dynamic_variables") or {}
+    
+    headers = {
+        "Authorization": f"Bearer {retell_key}",
+        "Content-Type": "application/json"
+    }
+    
+    payload = {
+        "agent_id": agent_id,
+        "retell_llm_dynamic_variables": dynamic_vars
+    }
+    
+    try:
+        r = requests.post("https://api.retellai.com/v2/create-web-call", headers=headers, json=payload, timeout=12)
+        res_data = r.json() if r.status_code in [200, 201] else {}
+        if r.status_code in [200, 201]:
+            return res_data
+        else:
+            return {"status": "error", "message": r.text, "code": r.status_code}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

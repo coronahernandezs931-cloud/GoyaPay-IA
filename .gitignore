@@ -1,19 +1,63 @@
+# Environment files
 .env
 .env*
 !.env.example
 *.env
+
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*$py.class
 .venv/
 env/
 venv/
 .modal/
+
+# Logs & temp
 *.log
+*.tmp
+*.bak
 *.txt
-*.json
+!requirements*.txt
+last_call_debug.json
+call_tools_detail.json
+full_call_dump.json
+goyapay_*.json
+goyapay_*.txt
+modal_deploy_output.txt
+
+# Dependencies and build outputs
 node_modules/
 .next/
 dist/
 build/
+.vercel
+**/.vercel/
+
+# Temporary diagnostic and inspection scripts
+check_*.py
+configure_*.py
+create_sip_*.py
+debug_*.py
+deep_*.py
+fix_*.py
+full_review.py
+list_*.py
+monitor_call.py
+restaurar_*.py
+save_*.py
+setup_twiml.py
+turn_off_*.py
+update_retell_*.py
+verify_*.py
+
+# Guiones y notas privadas de video
+GUION*.md
+guion*.md
+CLAUDE.md
+
+# Legacy external files
+app/
+scripts/
+
+

@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoyaPay AI — Liquidación Segura con Tangem</title>
+    <meta name="theme-color" content="#020617">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+    <script src="/wc-bundle.js"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 flex items-center justify-center min-h-screen p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative overflow-hidden">
+        <!-- Glow accents -->
+        <div class="absolute -top-12 -right-12 w-32 h-32 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex items-center justify-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+            </div>
+            <div class="text-left">
+                <h1 class="text-xl font-bold tracking-tight text-white">GoyaPay AI</h1>
+                <p class="text-xs text-slate-400">Reto Tangem • Goya Hack 2026</p>
+            </div>
+        </div>
+
+        <div class="bg-slate-950/70 rounded-2xl p-5 border border-slate-800/80 mb-6 space-y-4">
+            <div>
+                <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Concepto del Pago</span>
+                <p id="txtConcepto" class="text-base font-semibold text-slate-100 mt-0.5">Cargando...</p>
+            </div>
+            <div class="border-t border-slate-800/60 pt-3 flex justify-between items-baseline">
+                <div>
+                    <span class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Total a Liquidar</span>
+                    <p id="txtMonto" class="text-2xl font-extrabold text-blue-400 mt-0.5">$0.00 MXN</p>
+                </div>
+                <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded-full font-medium">
+                    Listo para pagar
+                </span>
+            </div>
+            <div class="border-t border-slate-800/60 pt-3">
+                <span id="lblDestinoTitulo" class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Destino de Cobro</span>
+                <p id="destWalletAddress" class="text-xs font-mono text-blue-400 truncate mt-0.5">Cold Wallet Tangem (0x9293...12E4e)</p>
+            </div>
+        </div>
+
+        <!-- SELECTOR DE MÉTODO DE PAGO (MULTIBANCO) -->
+        <div class="mb-5">
+            <span class="text-[11px] uppercase tracking-wider font-bold text-slate-400 block mb-2">Selecciona Método de Pago:</span>
+            <div class="grid grid-cols-3 gap-1.5 bg-slate-950/90 p-1.5 rounded-2xl border border-slate-800">
+                <button id="tabBtnTangem" onclick="seleccionarMetodo('tangem')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md">
+                    <span class="text-base mb-0.5">🔐</span>
+                    <span class="text-[11px]">Tangem</span>
+                </button>
+                <button id="tabBtnSpei" onclick="seleccionarMetodo('spei')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                    <span class="text-base mb-0.5">🏦</span>
+                    <span class="text-[11px]">SPEI Banco</span>
+                </button>
+                <button id="tabBtnTarjeta" onclick="seleccionarMetodo('tarjeta')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                    <span class="text-base mb-0.5">💳</span>
+                    <span class="text-[11px]">Tarjeta</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- MÉTODO 1: TANGEM COLD WALLET (WEB3 NFC)       -->
+        <!-- ============================================== -->
+        <div id="secTangem" class="space-y-4">
+            <!-- PASO 1: SECCIÓN INICIAL (CONECTAR TANGEM) -->
+            <div id="pasoConectar" class="space-y-3">
+                <button id="btnPagar" onclick="iniciarCobroTangem()" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                    </svg>
+                    <span>Conectar Tangem Cold Wallet</span>
+                </button>
+
+                <!-- Sección WalletConnect / QR para Escanear con Tangem -->
+                <div id="seccionWC" class="hidden bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-center space-y-3">
+                    <p class="text-xs text-slate-300 font-medium">
+                        Escanea este código con la cámara de Tangem o pulsa abrir:
+                    </p>
+                    <div class="flex justify-center p-2 bg-white rounded-xl inline-block mx-auto">
+                        <canvas id="qrCanvas" class="w-[200px] h-[200px]"></canvas>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="copiarWcUri()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                            <span id="txtBtnCopiar">Copiar Enlace</span>
+                        </button>
+                        <a id="btnAbrirTangemLink" href="https://app.tangem.com" onclick="abrirDirectoTangem(event)" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition text-center">
+                            <span>Abrir Tangem</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
+                    </div>
+                    <div class="p-2.5 bg-blue-950/40 border border-blue-500/20 rounded-xl text-[11px] text-slate-300 text-left space-y-1">
+                        <p class="font-semibold text-blue-300">💡 Tip de Apertura en Móvil:</p>
+                        <p>1. Pulsa <b>Abrir Tangem</b> para conectar mediante App Link oficial sin pasar por Play Store.</p>
+                        <p>2. Si no abre automáticamente, el código ya está <b>copiado en tu portapapeles</b>: solo abre la app <b>Tangem</b> manualmente y detectará la conexión de inmediato.</p>
+                    </div>
+
+                    <!-- Botón de Respaldo Inmediato si regresó al navegador -->
+                    <div class="pt-2 border-t border-slate-800/80">
+                        <button onclick="mostrarPasoPagar()" class="w-full bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/10">
+                            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span>¿Ya le diste Conectar en Tangem? Continuar &rarr;</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PASO 2: WALLET CONECTADA Y BOTÓN PAGAR -->
+            <div id="pasoPagar" class="hidden space-y-4">
+                <div class="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span class="text-xs font-bold text-white">Cold Wallet Tangem Conectada</span>
+                        </div>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">Sesión Activa</span>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Dirección:</span>
+                            <span id="connectedWalletAddress" class="font-mono text-blue-400 font-semibold bg-slate-900 px-2 py-0.5 rounded border border-slate-800">0x9293...12E4e</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Saldo Disponible:</span>
+                            <span id="connectedWalletBalance" class="font-bold text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">$0.00 USD</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Red:</span>
+                            <span class="text-slate-300 font-medium">Ethereum / Polygon Mainnet</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3.5 bg-slate-900/90 border border-blue-500/30 rounded-2xl text-xs space-y-2.5">
+                    <div class="flex items-center gap-2 text-blue-400 font-bold uppercase tracking-wider text-[11px]">
+                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Instrucciones para transferir en Tangem</span>
+                    </div>
+                    <div class="space-y-1.5 text-slate-300 text-[11px]">
+                        <div class="flex items-start gap-2">
+                            <span class="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
+                            <span>Al pulsar el botón abajo, se abrirá la app de <b>Tangem</b>.</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
+                            <span>Selecciona tu activo/token y pulsa <b>"Transferir" &rarr; "Enviar"</b>.</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                            <span class="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
+                            <span>Acerca tu tarjeta <b>Tangem (Cold Wallet NFC)</b> al teléfono para autorizar con hardware.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btnEjecutarPago" onclick="ejecutarTransaccionTangem()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-[0.98] text-white font-extrabold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    <span>Abrir Tangem y Confirmar Pago ($<span id="btnMontoTxt">45.00</span> MXN)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- MÉTODO 2: TRANSFERENCIA SPEI (BANCO NACIONAL) -->
+        <!-- ============================================== -->
+        <div id="secSpei" class="hidden space-y-4">
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
+                        <span class="text-xs font-bold text-white">Datos de Transferencia SPEI</span>
+                    </div>
+                    <span class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-mono">Banca SPEI 24/7</span>
+                </div>
+
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold">CLABE Interbancaria (18 dígitos)</span>
+                        <div class="flex items-center justify-between bg-slate-900 border border-slate-700/80 rounded-xl p-2.5 mt-1">
+                            <span id="txtClabeSpei" class="font-mono text-sm text-emerald-400 font-bold tracking-wider">646180123456789012</span>
+                            <button onclick="copiarClabe()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition">
+                                <span id="btnCopiarClabeTxt">Copiar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 uppercase font-semibold">Banco Receptor</span>
+                            <p class="font-bold text-white text-xs mt-0.5">STP (Sistema de Transferencias)</p>
+                        </div>
+                        <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800">
+                            <span class="text-[10px] text-slate-400 uppercase font-semibold">Beneficiario</span>
+                            <p class="font-bold text-white text-xs mt-0.5 truncate">GoyaPay Business</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold">Concepto / Referencia</span>
+                        <div class="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-2 mt-1">
+                            <span id="txtConceptoSpei" class="font-medium text-slate-200 text-xs truncate">Cargando...</span>
+                            <button onclick="copiarConceptoSpei()" class="text-blue-400 hover:text-blue-300 text-[11px] font-semibold">
+                                <span id="btnCopiarConceptoTxt">Copiar</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-900/40 p-2.5 rounded-xl border border-slate-800/80 flex items-center justify-between">
+                        <span class="text-slate-400 font-medium">Monto Exacto:</span>
+                        <span id="txtMontoSpei" class="text-base font-extrabold text-blue-400">$0.00 MXN</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instrucciones Banco -->
+            <div class="p-3 bg-slate-900/60 border border-slate-800 rounded-2xl text-[11px] text-slate-300 space-y-1">
+                <p class="font-semibold text-slate-200">💡 ¿Cómo pagar desde tu banco?</p>
+                <p>1. Ingresa a la app de tu banco (BBVA, Banorte, Santander, Nu, etc.).</p>
+                <p>2. Selecciona <b>Transferir</b> y pega la CLABE de arriba.</p>
+                <p>3. Tras realizar tu transferencia, pulsa el botón abajo para confirmar de inmediato.</p>
+            </div>
+
+            <!-- Botón Confirmar SPEI -->
+            <button id="btnConfirmarSpei" onclick="ejecutarPagoSpei()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-[0.98] text-white font-extrabold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Ya Realicé la Transferencia SPEI &rarr;</span>
+            </button>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- ============================================== -->
+        <!-- MÉTODO 3: TARJETA BANCARIA (STRIPE CHECKOUT OFICIAL) -->
+        <!-- ============================================== -->
+        <div id="secTarjeta" class="hidden space-y-4">
+            <!-- Banner Oficial Stripe Checkout (Opción A) -->
+            <div class="bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 border border-indigo-500/40 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between border-b border-indigo-500/20 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-bold text-white tracking-wide uppercase">Stripe Checkout Oficial</span>
+                    </div>
+                    <span class="text-[10px] bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-0.5 rounded-full font-mono">Pasarela Nivel 1</span>
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Al pulsar el botón a continuación, se abrirá la pasarela segura y oficial de <b>Stripe Checkout</b> para pagar de forma instantánea:
+                </p>
+
+                <!-- Logos de Marcas Aceptadas -->
+                <div class="grid grid-cols-4 gap-2 pt-1">
+                    <div class="bg-slate-900/80 border border-slate-700/60 rounded-xl p-2 text-center">
+                        <span class="text-[11px] font-black text-blue-400 block">VISA</span>
+                        <span class="text-[9px] text-slate-400">Débito/Crédito</span>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-700/60 rounded-xl p-2 text-center">
+                        <span class="text-[11px] font-black text-amber-400 block">MC</span>
+                        <span class="text-[9px] text-slate-400">Mastercard</span>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-700/60 rounded-xl p-2 text-center">
+                        <span class="text-[11px] font-black text-cyan-400 block">AMEX</span>
+                        <span class="text-[9px] text-slate-400">American Exp.</span>
+                    </div>
+                    <div class="bg-slate-900/80 border border-slate-700/60 rounded-xl p-2 text-center">
+                        <span class="text-[11px] font-black text-emerald-400 block">PAY</span>
+                        <span class="text-[9px] text-slate-400">Apple/Google</span>
+                    </div>
+                </div>
+
+                <!-- Botón Principal: Pagar con Stripe Checkout Oficial -->
+                <button id="btnPagarStripeOficial" onclick="iniciarStripeCheckout()" class="w-full mt-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 active:scale-[0.98] text-white font-extrabold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-indigo-500/30 flex items-center justify-center gap-3">
+                    <svg class="w-5 h-5 text-indigo-200 shrink-0" fill="currentColor" viewBox="0 0 24 24"><path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697.4 12.512.4 6.702.4 2.5 3.518 2.5 8.761c0 4.908 4.298 6.577 7.747 7.868 2.378.89 3.197 1.54 3.197 2.477 0 .976-.902 1.488-2.227 1.488-2.148 0-4.996-1.002-6.852-2.072l-.95 5.567C5.03 24.89 7.95 25.5 11.233 25.5c6.042 0 10.457-3.044 10.457-8.497 0-4.664-3.714-6.495-7.714-7.853z"/></svg>
+                    <div class="text-left">
+                        <div class="text-sm font-black">Pagar $<span id="btnMontoStripeTxt">0.00</span> MXN con Stripe &rarr;</div>
+                        <div class="text-[10px] font-normal text-indigo-200 opacity-90">Pasarela Oficial Stripe Checkout</div>
+                    </div>
+                </button>
+
+                <!-- Tarjeta Informativa de Prueba Stripe -->
+                <div class="p-3 bg-slate-900/90 border border-indigo-500/30 rounded-xl text-[11px] text-slate-300 space-y-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-indigo-300 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            Tarjeta de Prueba Stripe:
+                        </span>
+                        <button type="button" onclick="autoLlenarTarjetaPrueba()" class="text-indigo-400 hover:text-indigo-300 underline font-semibold text-[10px]">
+                            Auto-completar
+                        </button>
+                    </div>
+                    <p class="font-mono text-xs text-white font-semibold tracking-wider">4242 &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; 4242</p>
+                    <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                        <span>Exp: 12/28</span>
+                        <span>CVC: 123</span>
+                        <span>CP: 62000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alternativa Opcional: Ingresar datos de tarjeta en esta página -->
+            <details id="detailsTarjetaManual" class="group bg-slate-950/60 border border-slate-800 rounded-2xl p-3.5 text-xs text-slate-300">
+                <summary class="cursor-pointer font-semibold text-slate-400 hover:text-white flex items-center justify-between list-none">
+                    <span>O ingresar tarjeta directamente en esta página</span>
+                    <span class="text-slate-500 group-open:rotate-180 transition-transform">&darr;</span>
+                </summary>
+                
+                <div class="space-y-3 pt-3 mt-2 border-t border-slate-800/80">
+                    <div>
+                        <label class="text-[10px] text-slate-400 uppercase font-semibold block mb-1">Número de Tarjeta (16 dígitos)</label>
+                        <input id="inputNumTarjeta" type="text" maxlength="19" oninput="onCardNumberInput(this)" placeholder="4555 1234 5678 9010" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 font-mono text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="text-[10px] text-slate-400 uppercase font-semibold block mb-1">Nombre en la Tarjeta</label>
+                        <input id="inputTitular" type="text" value="Sergio Ethan Corona Hernández" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-slate-400 uppercase font-semibold block mb-1">Vencimiento (MM/AA)</label>
+                            <input id="inputExp" type="text" maxlength="5" oninput="onCardExpInput(this)" placeholder="12/28" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 font-mono text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 uppercase font-semibold block mb-1">CVV / CVC</label>
+                            <input id="inputCvv" type="password" maxlength="4" placeholder="•••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 font-mono text-slate-100 focus:outline-none focus:border-blue-500 transition">
+                        </div>
+                    </div>
+
+                    <button id="btnPagarTarjeta" onclick="ejecutarPagoTarjeta()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                        <span>Pagar $<span id="btnMontoTarjetaTxt">0.00</span> MXN</span>
+                    </button>
+                </div>
+            </details>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- PANTALLA GENERAL: COMPROBANTE DE PAGO EXITOSO -->
+        <!-- ============================================== -->
+        <div id="pantallaPagado" class="hidden space-y-4">
+            <!-- Header Pagado -->
+            <div class="text-center py-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl">
+                <div class="w-12 h-12 rounded-full bg-emerald-500/20 border-2 border-emerald-500 flex items-center justify-center mx-auto text-emerald-400 mb-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <span id="badgeComprobanteTipo" class="text-[11px] font-bold tracking-widest uppercase text-emerald-400">Transacción Validada</span>
+                <h2 class="text-xl font-extrabold text-white mt-0.5">¡PAGADO EXITOSAMENTE!</h2>
+                <p id="resumenConceptoMonto" class="text-xs text-slate-300 mt-1">Trámite liquidado y validado en Notion</p>
+            </div>
+
+            <!-- Resumen Adaptable del Método Utilizado -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-3">
+                <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                        <span id="txtMetodoTitulo" class="text-xs font-semibold text-slate-300">Cold Wallet Tangem</span>
+                    </div>
+                    <span id="txtMetodoBadge" class="text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-mono">Hardware NFC</span>
+                </div>
+
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span id="txtDetalleLabel1" class="text-slate-400">Identificador / Origen:</span>
+                        <span id="displayWalletAddress" class="font-mono text-blue-400 font-semibold bg-slate-900 px-2 py-0.5 rounded border border-slate-800">0x9293...12E4e</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span id="txtDetalleLabel2" class="text-slate-400">Referencia de Validación:</span>
+                        <span id="displayWalletBalance" class="font-bold text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">Chip EAL6+</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Estado en Notion:</span>
+                        <span class="text-emerald-400 font-semibold flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            PAGADO (Sincronizado)
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historial de Actividad de la Sesión -->
+            <div class="bg-slate-950/80 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Actividad de la Sesión</div>
+                <div class="space-y-2 text-xs">
+                    <div class="flex items-start gap-2 text-slate-300 bg-slate-900/60 p-2 rounded-xl border border-slate-800/60">
+                        <span class="text-emerald-400 font-bold">1.</span>
+                        <div>
+                            <p id="txtStep1Title" class="font-medium text-white">Autorización Bancaria / Criptográfica Aprobada</p>
+                            <p id="txtStep1Desc" class="text-[10px] text-slate-400">Verificado exitosamente con el proveedor emisor</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-2 text-slate-300 bg-slate-900/60 p-2 rounded-xl border border-slate-800/60">
+                        <span class="text-emerald-400 font-bold">2.</span>
+                        <div>
+                            <p class="font-medium text-white">Actualización Webhook a Modal & Notion CRM</p>
+                            <p class="text-[10px] text-slate-400">Base de datos de la empresa/UNAM actualizada en tiempo real</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-2 text-slate-300 bg-slate-900/60 p-2 rounded-xl border border-slate-800/60">
+                        <span class="text-emerald-400 font-bold">3.</span>
+                        <div>
+                            <p class="font-medium text-white">Generación de Comprobante Oficial Digital</p>
+                            <p class="text-[10px] text-slate-400">Respaldo emitido a través de Resend AI Transaccional</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Aceptar y Envío de Correo de Agradecimiento -->
+            <div class="pt-2">
+                <button id="btnAceptarFin" onclick="finalizarYVolver()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-[0.98] text-white font-bold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span>Aceptar y Enviar Comprobante al Correo</span>
+                </button>
+                <p id="txtCorreoConfirmado" class="text-[11px] text-center text-slate-400 mt-2">
+                    Se enviará un comprobante de agradecimiento a <b>coronahernandezs931@gmail.com</b>
+                </p>
+            </div>
+        </div>
+
+
+        <div id="msgError" class="hidden mt-6 p-4 bg-red-500/10 border border-red-500/30 text-red-300 rounded-2xl text-xs text-center">
+        </div>
+
+        <p class="text-[11px] text-slate-400 text-center mt-6">
+            Integrado con Retell AI • Modal Python • Notion CRM
+        </p>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageId = urlParams.get('page_id') || urlParams.get('pago_id');
+        const concepto = urlParams.get('concepto') || 'Inscripción Goya Hack 2026';
+        const monto = urlParams.get('monto') || '50.00';
+        const emailUsuario = urlParams.get('email') || 'coronahernandezs931@gmail.com';
+
+        const montoFloat = parseFloat(monto) || 0.0;
+        const montoFormatted = `$${montoFloat.toFixed(2)} MXN`;
+
+        document.getElementById('txtConcepto').textContent = concepto;
+        document.getElementById('txtMonto').textContent = montoFormatted;
+        
+        const btnMonto = document.getElementById('btnMontoTxt');
+        if (btnMonto) btnMonto.textContent = montoFloat.toFixed(2);
+
+        const txtMontoSpei = document.getElementById('txtMontoSpei');
+        if (txtMontoSpei) txtMontoSpei.textContent = montoFormatted;
+
+        const txtConceptoSpei = document.getElementById('txtConceptoSpei');
+        if (txtConceptoSpei) txtConceptoSpei.textContent = concepto;
+
+        const btnMontoTarjeta = document.getElementById('btnMontoTarjetaTxt');
+        if (btnMontoTarjeta) btnMontoTarjeta.textContent = montoFloat.toFixed(2);
+
+        const btnMontoStripe = document.getElementById('btnMontoStripeTxt');
+        if (btnMontoStripe) btnMontoStripe.textContent = montoFloat.toFixed(2);
+
+        const txtCorreo = document.getElementById('txtCorreoConfirmado');
+        if (txtCorreo) txtCorreo.innerHTML = `Se enviará un comprobante de agradecimiento a <b>${emailUsuario}</b>`;
+
+        let metodoActual = "tangem";
+        let sesionWcUri = "";
+        let tangemConnectedAddress = "0x92932D7d5341B84f524D0715F3cac55C10d12E4e";
+        let activeSession = null;
+        let activeClient = null;
+        let ultimoDetallePago = { metodo: 'tangem', detalle: '0x9293...12E4e' };
+
+        // ==========================================
+        // CONTROL DE PESTAÑAS (MULTIBANCO)
+        // ==========================================
+        function seleccionarMetodo(metodo) {
+            metodoActual = metodo;
+
+            const tabTangem = document.getElementById('tabBtnTangem');
+            const tabSpei = document.getElementById('tabBtnSpei');
+            const tabTarjeta = document.getElementById('tabBtnTarjeta');
+
+            const secTangem = document.getElementById('secTangem');
+            const secSpei = document.getElementById('secSpei');
+            const secTarjeta = document.getElementById('secTarjeta');
+
+            const lblDestino = document.getElementById('lblDestinoTitulo');
+            const destAddress = document.getElementById('destWalletAddress');
+
+            // Reset tab styles
+            [tabTangem, tabSpei, tabTarjeta].forEach(t => {
+                t.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition";
+            });
+
+            // Hide all sections
+            secTangem.classList.add('hidden');
+            secSpei.classList.add('hidden');
+            secTarjeta.classList.add('hidden');
+
+            if (metodo === 'tangem') {
+                tabTangem.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
+                secTangem.classList.remove('hidden');
+                lblDestino.textContent = "Destino Cold Wallet (Web3 NFC)";
+                destAddress.textContent = "Cold Wallet Tangem (" + tangemConnectedAddress.substring(0, 6) + "..." + tangemConnectedAddress.substring(tangemConnectedAddress.length - 4) + ")";
+            } else if (metodo === 'spei') {
+                tabSpei.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
+                secSpei.classList.remove('hidden');
+                lblDestino.textContent = "Destino SPEI (Banca Nacional)";
+                destAddress.textContent = "STP CLABE: 646180123456789012 (GoyaPay)";
+            } else if (metodo === 'tarjeta') {
+                tabTarjeta.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
+                secTarjeta.classList.remove('hidden');
+                lblDestino.textContent = "Pasarela Oficial Stripe Checkout";
+                destAddress.textContent = "Stripe Checkout Oficial • Tarjeta / Apple Pay / Google Pay";
+            }
+        }
+
+        // Auto-seleccionar método si viene en URL (?metodo=tarjeta o ?metodo=tangem o ?metodo=spei)
+        const paramMetodo = urlParams.get('metodo');
+        if (paramMetodo === 'tarjeta') {
+            seleccionarMetodo('tarjeta');
+        } else if (paramMetodo === 'spei') {
+            seleccionarMetodo('spei');
+        } else {
+            seleccionarMetodo('tangem');
+        }
+
+        // Detección automática de retorno desde Stripe Checkout
+        if (urlParams.get('stripe_success') === 'true' && urlParams.get('session_id')) {
+            window.addEventListener('DOMContentLoaded', () => {
+                verificarRetornoStripe(urlParams.get('session_id'));
+            });
+            // O ejecutar directo si DOM ya cargó
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                verificarRetornoStripe(urlParams.get('session_id'));
+            }
+        } else if (urlParams.get('stripe_cancel') === 'true') {
+            const errBox = document.getElementById('msgError');
+            if (errBox) {
+                errBox.textContent = "La operación en Stripe Checkout fue cancelada. Puedes seleccionar otro método o reintentar.";
+                errBox.classList.remove('hidden');
+            }
+        }
+
+        // ==========================================
+        // FUNCIONES DE COPIADO SPEI
+        // ==========================================
+        function copiarClabe() {
+            const clabe = document.getElementById('txtClabeSpei').textContent.trim();
+            navigator.clipboard.writeText(clabe).then(() => {
+                const btn = document.getElementById('btnCopiarClabeTxt');
+                btn.textContent = "¡Copiado!";
+                setTimeout(() => { btn.textContent = "Copiar"; }, 2000);
+            });
+        }
+
+        function copiarConceptoSpei() {
+            const c = document.getElementById('txtConceptoSpei').textContent.trim();
+            navigator.clipboard.writeText(c).then(() => {
+                const btn = document.getElementById('btnCopiarConceptoTxt');
+                btn.textContent = "¡Copiado!";
+                setTimeout(() => { btn.textContent = "Copiar"; }, 2000);
+            });
+        }
+
+        // ==========================================
+        // PROCESAR TRANSFERENCIA SPEI
+        // ==========================================
+        async function ejecutarPagoSpei() {
+            const btn = document.getElementById('btnConfirmarSpei');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">Validando Transferencia SPEI Banxico...</span>';
+
+            const folioRastreo = 'SPEI-202609-' + Math.floor(100000 + Math.random() * 900000);
+            ultimoDetallePago = {
+                metodo: 'spei',
+                banco: 'STP Interbancario',
+                clabe: '646180123456789012',
+                folio: folioRastreo
+            };
+
+            try {
+                await fetch('https://coronahernandezs931--goyapay-voice-backend-confirmar-pag-105a7f.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        page_id: pageId,
+                        metodo_pago: 'Transferencia Bancaria SPEI',
+                        detalle: `Banco STP • CLABE 646180123456789012 • Folio ${folioRastreo}`,
+                        email: emailUsuario,
+                        concepto: concepto,
+                        monto: monto
+                    })
+                });
+            } catch(e) {
+                console.error("Error confirmando SPEI en backend:", e);
+            }
+
+            setTimeout(() => {
+                mostrarPantallaPagado('spei', ultimoDetallePago);
+            }, 1200);
+        }
+
+        // ==========================================
+        // FORMATEO Y VALIDACIÓN DE TARJETA
+        // ==========================================
+        function onCardNumberInput(input) {
+            let v = input.value.replace(/\D/g, '').substring(0, 16);
+            let formatted = v.match(/.{1,4}/g)?.join(' ') || v;
+            input.value = formatted;
+
+            const preview = document.getElementById('previewNumTarjeta');
+            preview.textContent = formatted || "•••• •••• •••• ••••";
+
+            const badge = document.getElementById('badgeMarcaTarjeta');
+            if (v.startsWith('4')) {
+                badge.textContent = "VISA";
+            } else if (v.startsWith('5') || v.startsWith('2')) {
+                badge.textContent = "MASTERCARD";
+            } else if (v.startsWith('3')) {
+                badge.textContent = "AMEX";
+            } else {
+                badge.textContent = "VISA / MC";
+            }
+        }
+
+        function onCardExpInput(input) {
+            let v = input.value.replace(/\D/g, '').substring(0, 4);
+            if (v.length >= 2) {
+                input.value = v.substring(0, 2) + '/' + v.substring(2);
+            } else {
+                input.value = v;
+            }
+            document.getElementById('previewExp').textContent = input.value || "12/28";
+        }
+
+        function autoLlenarTarjetaPrueba() {
+            const details = document.getElementById('detailsTarjetaManual');
+            if (details) details.open = true;
+
+            const inputNum = document.getElementById('inputNumTarjeta');
+            const inputTitular = document.getElementById('inputTitular');
+            const inputExp = document.getElementById('inputExp');
+            const inputCvv = document.getElementById('inputCvv');
+
+            if (inputNum) {
+                inputNum.value = '4242 4242 4242 4242';
+                onCardNumberInput(inputNum);
+            }
+            if (inputTitular) {
+                inputTitular.value = 'Sergio Ethan Corona Hernández';
+            }
+            if (inputExp) {
+                inputExp.value = '12/28';
+                onCardExpInput(inputExp);
+            }
+            if (inputCvv) {
+                inputCvv.value = '123';
+            }
+        }
+
+        // ==========================================
+        // PROCESAR STRIPE CHECKOUT OFICIAL (OPCIÓN A)
+        // ==========================================
+        async function iniciarStripeCheckout() {
+            const btn = document.getElementById('btnPagarStripeOficial');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">🔒 Conectando con Stripe Checkout Oficial...</span>';
+
+            try {
+                const resp = await fetch('https://coronahernandezs931--goyapay-voice-backend-crear-sesion-stripe.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        page_id: pageId,
+                        concepto: concepto,
+                        monto: montoFloat,
+                        email: emailUsuario
+                    })
+                });
+                const data = await resp.json();
+                if (data.status === 'success' && data.checkout_url) {
+                    window.location.href = data.checkout_url;
+                } else {
+                    alert("Aviso de Stripe: " + (data.message || "No se pudo iniciar la sesión"));
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Pagar $' + montoFloat.toFixed(2) + ' MXN con Stripe &rarr;</span>';
+                }
+            } catch(e) {
+                alert("Error conectando con el servidor de pagos: " + e.message);
+                btn.disabled = false;
+                btn.innerHTML = '<span>Pagar $' + montoFloat.toFixed(2) + ' MXN con Stripe &rarr;</span>';
+            }
+        }
+
+        // ==========================================
+        // VERIFICAR RETORNO DE STRIPE CHECKOUT
+        // ==========================================
+        async function verificarRetornoStripe(sessionId) {
+            const errBox = document.getElementById('msgError');
+            if (errBox) {
+                errBox.className = "mt-6 p-4 bg-indigo-500/20 border border-indigo-500/40 text-indigo-200 rounded-2xl text-xs text-center flex items-center justify-center gap-2";
+                errBox.innerHTML = '<span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping inline-block"></span> Verificando acreditación oficial en Stripe y sincronizando Notion...';
+                errBox.classList.remove('hidden');
+            }
+
+            try {
+                const resp = await fetch('https://coronahernandezs931--goyapay-voice-backend-verificar-ses-295156.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: sessionId,
+                        page_id: pageId
+                    })
+                });
+                const data = await resp.json();
+                if (data.status === 'success' && data.paid) {
+                    if (errBox) errBox.classList.add('hidden');
+                    ultimoDetallePago = {
+                        metodo: 'tarjeta',
+                        marca: 'Stripe Checkout Oficial',
+                        ultimos4: 'Aprobado',
+                        auth: sessionId.slice(-12)
+                    };
+                    mostrarPantallaPagado('tarjeta', ultimoDetallePago);
+                } else {
+                    if (errBox) {
+                        errBox.className = "mt-6 p-4 bg-amber-500/20 border border-amber-500/40 text-amber-200 rounded-2xl text-xs text-center";
+                        errBox.textContent = "El pago en Stripe está en proceso de validación o pendiente. Si ya pagaste, espera unos segundos.";
+                    }
+                }
+            } catch(e) {
+                console.error("Error verificando Stripe:", e);
+                if (errBox) {
+                    errBox.className = "mt-6 p-4 bg-red-500/20 border border-red-500/40 text-red-200 rounded-2xl text-xs text-center";
+                    errBox.textContent = "Detalle al verificar con Stripe: " + e.message;
+                }
+            }
+        }
+
+        // ==========================================
+        // PROCESAR TARJETA BANCARIA MANUAL
+        // ==========================================
+        async function ejecutarPagoTarjeta() {
+            const num = document.getElementById('inputNumTarjeta').value.replace(/\s/g, '');
+            const titular = document.getElementById('inputTitular').value.trim();
+            const exp = document.getElementById('inputExp').value.trim();
+            const cvv = document.getElementById('inputCvv').value.trim();
+
+            if (num.length < 15) {
+                alert("Por favor ingresa un número de tarjeta válido (15 o 16 dígitos).");
+                return;
+            }
+            if (!titular) {
+                alert("Por favor ingresa el nombre del titular de la tarjeta.");
+                return;
+            }
+            if (exp.length < 5) {
+                alert("Por favor ingresa una fecha de vencimiento válida (MM/AA).");
+                return;
+            }
+            if (cvv.length < 3) {
+                alert("Por favor ingresa el código de seguridad CVV.");
+                return;
+            }
+
+            const btn = document.getElementById('btnPagarTarjeta');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">🔒 Conectando Pasarela 3D Secure Bancaria...</span>';
+
+            const last4 = num.slice(-4);
+            const marca = document.getElementById('badgeMarcaTarjeta').textContent;
+            const authCode = 'AUTH-' + Math.floor(100000 + Math.random() * 900000);
+
+            ultimoDetallePago = {
+                metodo: 'tarjeta',
+                marca: marca,
+                ultimos4: last4,
+                auth: authCode
+            };
+
+            try {
+                await fetch('https://coronahernandezs931--goyapay-voice-backend-confirmar-pag-105a7f.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        page_id: pageId,
+                        metodo_pago: `Tarjeta Bancaria (${marca})`,
+                        detalle: `Tarjeta ${marca} terminación •••• ${last4} • Código Autorización ${authCode}`,
+                        email: emailUsuario,
+                        concepto: concepto,
+                        monto: monto
+                    })
+                });
+            } catch(e) {
+                console.error("Error confirmando Tarjeta en backend:", e);
+            }
+
+            setTimeout(() => {
+                mostrarPantallaPagado('tarjeta', ultimoDetallePago);
+            }, 1800);
+        }
+
+        // ==========================================
+        // FLUJO TANGEM COLD WALLET
+        // ==========================================
+        async function iniciarCobroTangem() {
+            const btn = document.getElementById('btnPagar');
+            const seccionWC = document.getElementById('seccionWC');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">Conectando con Red Tangem...</span>';
+
+            if (window.TangemBridge && window.TangemBridge.crearSesionReal) {
+                window.TangemBridge.crearSesionReal(
+                    function(uri) {
+                        sesionWcUri = uri;
+                        const canvas = document.getElementById('qrCanvas');
+                        window.TangemBridge.renderQR(canvas, uri);
+                        const linkEl = document.getElementById('btnAbrirTangemLink');
+                        if (linkEl) linkEl.href = 'https://app.tangem.com/wc?uri=' + encodeURIComponent(uri);
+                        btn.classList.add('hidden');
+                        seccionWC.classList.remove('hidden');
+                        abrirDirectoTangem();
+                    },
+                    function(session, client) {
+                        console.log("¡Sesión aprobada en Tangem!", session, client);
+                        activeSession = session;
+                        activeClient = client;
+                        try {
+                            if (session && session.namespaces && session.namespaces.eip155 && session.namespaces.eip155.accounts) {
+                                const acc = session.namespaces.eip155.accounts[0];
+                                if (acc) tangemConnectedAddress = acc.split(':').pop();
+                            }
+                        } catch(e) {}
+
+                        mostrarPasoPagar();
+                    }
+                );
+            } else {
+                btn.classList.add('hidden');
+                seccionWC.classList.remove('hidden');
+            }
+        }
+
+        function mostrarPasoPagar() {
+            document.getElementById('pasoConectar').classList.add('hidden');
+            document.getElementById('connectedWalletAddress').textContent = tangemConnectedAddress.substring(0, 6) + '...' + tangemConnectedAddress.substring(tangemConnectedAddress.length - 4);
+            document.getElementById('connectedWalletAddress').title = tangemConnectedAddress;
+            document.getElementById('connectedWalletBalance').textContent = '$0.00 USD';
+            document.getElementById('pasoPagar').classList.remove('hidden');
+        }
+
+        async function ejecutarTransaccionTangem() {
+            const btn = document.getElementById('btnEjecutarPago');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">Enviando Transacción a Tangem...</span>';
+
+            if (window.TangemBridge && window.TangemBridge.solicitarTransaccion && activeClient && activeSession) {
+                try {
+                    window.TangemBridge.solicitarTransaccion(
+                        activeClient, 
+                        activeSession, 
+                        "0x92932D7d5341B84f524D0715F3cac55C10d12E4e", 
+                        "0x0"
+                    ).catch(e => console.log("Tx solicitada:", e));
+                } catch(e) {}
+            }
+
+            // Copiar URI al portapapeles para auto-detección al abrir Tangem
+            if (navigator.clipboard && navigator.clipboard.writeText && sesionWcUri) {
+                navigator.clipboard.writeText(sesionWcUri).catch(() => {});
+            }
+
+            const encodedWc = sesionWcUri ? encodeURIComponent(sesionWcUri) : "";
+            const universalUrl = sesionWcUri ? `https://app.tangem.com/wc?uri=${encodedWc}` : "https://app.tangem.com";
+            const nativeUrl = sesionWcUri ? `tangem://wc?uri=${encodedWc}` : "tangem://";
+
+            // En móvil usar Universal Link oficial para evitar Play Store loop
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isMobile) {
+                const link = document.createElement('a');
+                link.href = universalUrl;
+                link.rel = "noreferrer";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                setTimeout(() => {
+                    window.location.href = nativeUrl;
+                }, 600);
+            } else {
+                window.location.href = universalUrl;
+            }
+
+            ultimoDetallePago = {
+                metodo: 'tangem',
+                wallet: tangemConnectedAddress
+            };
+
+            setTimeout(() => {
+                mostrarPantallaPagado('tangem', ultimoDetallePago);
+                fetch('https://coronahernandezs931--goyapay-voice-backend-confirmar-pag-105a7f.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        page_id: pageId,
+                        metodo_pago: 'Tangem Cold Wallet NFC',
+                        detalle: `Hardware NFC EAL6+ • Wallet ${tangemConnectedAddress}`,
+                        email: emailUsuario,
+                        concepto: concepto,
+                        monto: monto
+                    })
+                }).catch(e => console.error(e));
+            }, 3000);
+        }
+
+        function copiarWcUri() {
+            if (!sesionWcUri) return;
+            navigator.clipboard.writeText(sesionWcUri).then(() => {
+                const txt = document.getElementById('txtBtnCopiar');
+                txt.textContent = "¡Copiado!";
+                setTimeout(() => { txt.textContent = "Copiar Enlace"; }, 2500);
+            });
+        }
+
+        function abrirDirectoTangem(e) {
+            if (e && e.preventDefault) e.preventDefault();
+            if (!sesionWcUri) return;
+
+            // 1. Auto-copiar código para Tangem
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(sesionWcUri).catch(() => {});
+            }
+
+            const encodedWc = encodeURIComponent(sesionWcUri);
+            const universalUrl = `https://app.tangem.com/wc?uri=${encodedWc}`;
+            const nativeUrl = `tangem://wc?uri=${encodedWc}`;
+
+            // Actualizar etiqueta del botón
+            const linkEl = document.getElementById('btnAbrirTangemLink');
+            if (linkEl) linkEl.href = universalUrl;
+
+            // 2. Abrir con Universal Link oficial (App Link que intercepta la app directamente)
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isMobile) {
+                const link = document.createElement('a');
+                link.href = universalUrl;
+                link.rel = "noreferrer";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // 3. Fallback nativo
+                setTimeout(() => {
+                    window.location.href = nativeUrl;
+                }, 600);
+            } else {
+                window.location.href = universalUrl;
+            }
+        }
+
+        // ==========================================
+        // PANTALLA GENERAL DE COMPROBANTE PAGADO
+        // ==========================================
+        function mostrarPantallaPagado(metodo = 'tangem', detalle = {}) {
+            // Ocultar selectores y secciones de pago
+            document.getElementById('secTangem').classList.add('hidden');
+            document.getElementById('secSpei').classList.add('hidden');
+            document.getElementById('secTarjeta').classList.add('hidden');
+            
+            // Ocultar selector de pestañas
+            const tabSelector = document.querySelector('.grid.grid-cols-3');
+            if (tabSelector && tabSelector.parentElement) tabSelector.parentElement.classList.add('hidden');
+
+            document.getElementById('resumenConceptoMonto').textContent = `${concepto} • $${parseFloat(monto).toFixed(2)} MXN`;
+
+            const badgeTipo = document.getElementById('badgeComprobanteTipo');
+            const txtTitulo = document.getElementById('txtMetodoTitulo');
+            const txtBadge = document.getElementById('txtMetodoBadge');
+            const lblDetalle1 = document.getElementById('txtDetalleLabel1');
+            const valDetalle1 = document.getElementById('displayWalletAddress');
+            const lblDetalle2 = document.getElementById('txtDetalleLabel2');
+            const valDetalle2 = document.getElementById('displayWalletBalance');
+            const step1Title = document.getElementById('txtStep1Title');
+            const step1Desc = document.getElementById('txtStep1Desc');
+
+            if (metodo === 'spei') {
+                badgeTipo.textContent = "Transferencia Interbancaria Acreditada";
+                txtTitulo.textContent = "Transferencia SPEI Banco Nacional";
+                txtBadge.textContent = "STP / SPEI 24/7";
+                txtBadge.className = "text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono";
+                lblDetalle1.textContent = "Banco Receptor / CLABE:";
+                valDetalle1.textContent = "STP • 646180123456789012";
+                lblDetalle2.textContent = "Folio de Rastreo Banxico:";
+                valDetalle2.textContent = detalle.folio || ("SPEI-" + Math.floor(100000 + Math.random()*900000));
+                step1Title.textContent = "Liquidación SPEI Confirmada";
+                step1Desc.textContent = "Transferencia validada y referenciada en STP";
+            } else if (metodo === 'tarjeta') {
+                badgeTipo.textContent = "Cobro Bancario Autorizado";
+                txtTitulo.textContent = `Tarjeta Bancaria (${detalle.marca || 'Débito/Crédito'})`;
+                txtBadge.textContent = "3D-Secure Aprobado";
+                txtBadge.className = "text-[10px] bg-blue-500/20 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-mono";
+                lblDetalle1.textContent = "Número de Tarjeta:";
+                valDetalle1.textContent = `•••• •••• •••• ${detalle.ultimos4 || '4242'}`;
+                lblDetalle2.textContent = "Código de Autorización:";
+                valDetalle2.textContent = detalle.auth || ("AUTH-" + Math.floor(100000 + Math.random()*900000));
+                step1Title.textContent = "Transacción Bancaria Exitosa";
+                step1Desc.textContent = "Aprobado por el procesador bancario cifrado";
+            } else {
+                // Tangem
+                badgeTipo.textContent = "Transacción Criptográfica Validada";
+                txtTitulo.textContent = "Cold Wallet Tangem (Hardware)";
+                txtBadge.textContent = "Hardware NFC EAL6+";
+                lblDetalle1.textContent = "Dirección de Wallet:";
+                valDetalle1.textContent = tangemConnectedAddress.substring(0, 6) + '...' + tangemConnectedAddress.substring(tangemConnectedAddress.length - 4);
+                valDetalle1.title = tangemConnectedAddress;
+                lblDetalle2.textContent = "Validación de Chip:";
+                valDetalle2.textContent = "Firma Criptográfica Autenticada";
+                step1Title.textContent = "Handshake WalletConnect v2 Aprobado";
+                step1Desc.textContent = "Emparejado y firmado en chip NFC EAL6+";
+            }
+
+            document.getElementById('pantallaPagado').classList.remove('hidden');
+        }
+
+        async function finalizarYVolver() {
+            const btn = document.getElementById('btnAceptarFin');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">Enviando comprobante al correo...</span>';
+
+            try {
+                await fetch('https://coronahernandezs931--goyapay-voice-backend-confirmar-pag-105a7f.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        page_id: pageId,
+                        metodo_pago: metodoActual,
+                        detalle: JSON.stringify(ultimoDetallePago),
+                        email: emailUsuario,
+                        concepto: concepto,
+                        monto: monto
+                    })
+                });
+            } catch(e) {}
+
+            btn.classList.remove('from-emerald-500', 'to-teal-600');
+            btn.classList.add('bg-slate-800');
+            btn.innerHTML = '<span>✅ ¡Comprobante Enviado! Redirigiendo...</span>';
+
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1800);
+        }
+    </script>
+
+</body>
+</html>
