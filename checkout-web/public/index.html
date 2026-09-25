@@ -79,13 +79,13 @@
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         Estado del Ecosistema
                     </h2>
-                    <span class="text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">Modal + Notion + Zernio</span>
+                    <span class="text-[11px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full">Modal + Notion + Web3</span>
                 </div>
 
                 <div class="space-y-3">
                     <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl">
                         <div class="text-[11px] text-slate-400 font-semibold uppercase">1. Gestión Financiera & Gastos (Notion CRM)</div>
-                        <p class="text-xs text-slate-300 mt-1">Registra cobros y analiza los gastos operativos del negocio.</p>
+                        <p class="text-xs text-slate-300 mt-1">Registra cobros, valida adeudos y analiza los gastos operativos del negocio.</p>
                         <div class="mt-2 text-[11px] font-mono bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-slate-300 flex justify-between">
                             <span>Cobrado / Adeudos:</span>
                             <div>
@@ -95,25 +95,7 @@
                     </div>
 
                     <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl">
-                        <div class="text-[11px] text-slate-400 font-semibold uppercase">2. Cuentas Digitales & Difusión (Zernio API)</div>
-                        <p class="text-xs text-slate-300 mt-1">Analítica unificada de TikTok y YouTube con pipeline de contenidos.</p>
-                        <div class="mt-2 text-[11px] font-mono bg-slate-900/90 p-2 rounded-xl border border-slate-800 text-slate-300 flex justify-between">
-                            <span>Vistas / Pipeline:</span>
-                            <span class="text-indigo-400 font-bold">5,107 vistas • 111 posts</span>
-                        </div>
-                        <div class="mt-2.5 pt-2 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
-                            <a href="https://zernio.com/dashboard" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] text-purple-400 hover:text-purple-300 font-semibold underline">
-                                <span>Ver Panel de Zernio ↗</span>
-                            </a>
-                            <span class="text-slate-600 text-xs">•</span>
-                            <button onclick="abrirModalProgramarVideo()" class="inline-flex items-center gap-1 text-[11px] text-pink-400 hover:text-pink-300 font-semibold underline">
-                                <span>🎬 Programar Video &rarr;</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl">
-                        <div class="text-[11px] text-slate-400 font-semibold uppercase">3. Pasarela Multichain Web3 & Multibanco</div>
+                        <div class="text-[11px] text-slate-400 font-semibold uppercase">2. Pasarela Multichain Web3 & Multibanco</div>
                         <p class="text-xs text-slate-300 mt-1">Liquidación en <b>Avalanche C-Chain</b>, <b>Pollar Smart Wallet (Stellar)</b>, SPEI y Tarjeta.</p>
                         <div class="mt-2 flex flex-wrap gap-1 text-[10px]">
                             <span class="px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-semibold">❄️ Avalanche C-Chain</span>
@@ -141,7 +123,7 @@
 
     </div>
 
-    <!-- SECCIÓN BUSINESS MANAGER: CENTRO DE CONTROL DEL NEGOCIO -->
+    <!-- SECCIÓN BUSINESS MANAGER: CENTRO DE CONTROL FINANCIERO -->
     <div class="max-w-4xl w-full mx-auto mt-6">
         <div class="bg-slate-900/90 border border-indigo-500/30 rounded-3xl p-6 sm:p-7 shadow-2xl relative overflow-hidden backdrop-blur-md">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-800 gap-3">
@@ -154,25 +136,19 @@
                             GoyaPay Business Manager
                             <span class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded-full font-medium">Panel Ejecutivo</span>
                         </h2>
-                        <p class="text-xs text-slate-400">Analizador integral de finanzas (Notion) y cuentas digitales (Zernio API)</p>
+                        <p class="text-xs text-slate-400">Auditoría financiera inteligente, balances y conciliación en Notion CRM</p>
                     </div>
                 </div>
 
                 <div class="flex flex-wrap gap-1.5 items-center">
-                    <button onclick="ejecutarAnalisisNegocio('finanzas')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1 transition">
-                        <span>📊 Finanzas</span>
+                    <button onclick="ejecutarAnalisisNegocio('finanzas')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition">
+                        <span>📊 Finanzas Notion</span>
                     </button>
-                    <button onclick="ejecutarAnalisisNegocio('cuentas')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center gap-1 transition">
-                        <span>🌐 Zernio</span>
+                    <button onclick="ejecutarAnalisisNegocio('resumen')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-blue-500/20 flex items-center gap-1.5 transition">
+                        <span>⚡ Diagnóstico 360°</span>
                     </button>
-                    <button onclick="ejecutarAnalisisNegocio('resumen')" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-bold shadow-lg shadow-blue-500/20 flex items-center gap-1 transition">
-                        <span>⚡ Reporte 360°</span>
-                    </button>
-                    <button onclick="abrirModalProgramarVideo()" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white text-xs font-bold shadow-lg shadow-pink-500/20 flex items-center gap-1.5 transition">
-                        <span>🎬 Programar Video</span>
-                    </button>
-                    <a href="https://zernio.com/dashboard" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-xl bg-purple-600/30 hover:bg-purple-600/50 text-purple-200 border border-purple-500/40 text-xs font-bold flex items-center gap-1.5 transition">
-                        <span>Ver Panel de Zernio ↗</span>
+                    <a href="/checkout?page_id=3e549bc5-0aa5-8109-bd08-c8a1ebf5f1b4&concepto=Inscripci%C3%B3n+Goya+Hack+2026&monto=50.00" target="_blank" class="px-3 py-1.5 rounded-xl bg-rose-600/30 hover:bg-rose-600/50 text-rose-200 border border-rose-500/40 text-xs font-bold flex items-center gap-1.5 transition">
+                        <span>❄️ Pasarela Web3 ↗</span>
                     </a>
                 </div>
             </div>
@@ -190,14 +166,14 @@
                     <span class="text-[10px] text-amber-400/80">2 trámites activos</span>
                 </div>
                 <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Canales Zernio</span>
-                    <p id="kpiCanales" class="text-lg font-extrabold text-purple-400 mt-0.5">2 Canales</p>
-                    <span class="text-[10px] text-purple-400/80">TikTok & YouTube</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Cobranza Efectiva</span>
+                    <p id="kpiCobranza" class="text-lg font-extrabold text-blue-400 mt-0.5">100%</p>
+                    <span class="text-[10px] text-blue-400/80">Recuperación activa</span>
                 </div>
                 <div class="bg-slate-950/70 p-3 rounded-2xl border border-slate-800">
-                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Alcance & Pipeline</span>
-                    <p id="kpiPipeline" class="text-lg font-extrabold text-indigo-400 mt-0.5">5,107 vistas</p>
-                    <span class="text-[10px] text-indigo-400/80">111 posts en pipeline</span>
+                    <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Redes Blockchain</span>
+                    <p id="kpiBlockchain" class="text-lg font-extrabold text-purple-400 mt-0.5">Avalanche & Stellar</p>
+                    <span class="text-[10px] text-purple-400/80">C-Chain + Pollar SDK</span>
                 </div>
             </div>
 
@@ -231,18 +207,17 @@
                             Chat con Sofía (GoyaPay Assistant)
                             <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-medium">Asistente 24/7</span>
                         </h2>
-                        <p class="text-xs text-slate-400">Consulta adeudos, liquida trámites o analiza las finanzas y cuentas de tu negocio.</p>
+                        <p class="text-xs text-slate-400">Consulta adeudos, liquida trámites o analiza las finanzas de tu negocio.</p>
                     </div>
                 </div>
 
                 <!-- Chips rápidos -->
                 <div class="flex flex-wrap gap-1.5 text-xs">
-                    <button onclick="abrirModalProgramarVideo()" class="px-2.5 py-1 rounded-full bg-pink-600/30 hover:bg-pink-600/50 text-pink-300 border border-pink-500/40 transition">🎬 Programar Video</button>
-                    <a href="https://zernio.com/dashboard" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-full bg-purple-600/30 hover:bg-purple-600/50 text-purple-300 border border-purple-500/40 transition inline-flex items-center gap-1">🌐 Panel Zernio ↗</a>
                     <button onclick="sendQuickMessage('Analizar las finanzas del negocio')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">💼 Finanzas Negocio</button>
-                    <button onclick="sendQuickMessage('Analizar las cuentas y redes de mi negocio con Zernio')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">🌐 Cuentas Zernio</button>
+                    <button onclick="sendQuickMessage('¿Cuáles son mis adeudos pendientes?')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">📋 Consultar Adeudos</button>
                     <button onclick="sendQuickMessage('Resumen general del negocio')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">🏢 Resumen 360°</button>
-                    <button onclick="sendQuickMessage('¿Cuáles son mis adeudos pendientes?')" class="px-2.5 py-1 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700 transition">📋 Adeudos</button>
+                    <a href="/checkout?page_id=3e549bc5-0aa5-8109-bd08-c8a1ebf5f1b4&concepto=Inscripci%C3%B3n+Goya+Hack+2026&monto=50.00&metodo=tangem" target="_blank" class="px-2.5 py-1 rounded-full bg-rose-600/30 hover:bg-rose-600/50 text-rose-300 border border-rose-500/40 transition">❄️ Pagar Avalanche</a>
+                    <a href="/checkout?page_id=3e549bc5-0aa5-8109-bd08-c8a1ebf5f1b4&concepto=Inscripci%C3%B3n+Goya+Hack+2026&monto=50.00&metodo=pollar" target="_blank" class="px-2.5 py-1 rounded-full bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 transition">🪙 Pagar Pollar</a>
                 </div>
             </div>
 
@@ -251,7 +226,7 @@
                 <div class="flex items-start gap-2.5">
                     <div class="w-7 h-7 rounded-full bg-blue-600/30 border border-blue-500/30 flex items-center justify-center text-xs text-blue-300 font-bold shrink-0">S</div>
                     <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl rounded-tl-none p-3 max-w-xl text-slate-200">
-                        ¡Hola! Soy Sofía de GoyaPay AI Business. Puedo gestionar cobros y adeudos con Tangem Cold Wallet, SPEI o Tarjeta, y también **analizar las finanzas de tu negocio** o el rendimiento de tus **cuentas digitales conectadas en Zernio**. ¿Qué deseas consultar hoy?
+                        ¡Hola! Soy Sofía de GoyaPay AI Business. Puedo gestionar cobros y adeudos con Avalanche C-Chain, Pollar Smart Wallet en Stellar, Tangem Cold Wallet, SPEI o Tarjeta, y también **analizar las finanzas de tu negocio en Notion**. ¿Qué deseas consultar hoy?
                     </div>
                 </div>
             </div>
@@ -474,9 +449,6 @@
                         };
                     }
                     appendChatMessage('Sofía', data.respuesta, false, checkoutData);
-                    if (data.abrir_modal_video) {
-                        abrirModalProgramarVideo();
-                    }
                 } else {
                     appendChatMessage('Sofía', 'Disculpa, no pude procesar la consulta en este momento.');
                 }
@@ -491,7 +463,7 @@
         }
 
         // ==========================================
-        // FUNCIONALIDAD BUSINESS MANAGER (NOTION + ZERNIO)
+        // FUNCIONALIDAD BUSINESS MANAGER (NOTION CRM)
         // ==========================================
         async function ejecutarAnalisisNegocio(tipo) {
             const box = document.getElementById('boxDiagnosticoNegocio');
@@ -507,10 +479,6 @@
                 titulo.textContent = "📊 Análisis de Finanzas & Gastos (Notion CRM)";
                 badge.textContent = "Notion DB Live";
                 endpoint = 'https://coronahernandezs931--goyapay-voice-backend-analizar-fina-0d5360.modal.run';
-            } else if (tipo === 'cuentas') {
-                titulo.textContent = "🌐 Rendimiento de Cuentas Digitales (Zernio API)";
-                badge.textContent = "Zernio Omnichannel";
-                endpoint = 'https://coronahernandezs931--goyapay-voice-backend-analizar-cuen-4a2b0c.modal.run';
             } else {
                 titulo.textContent = "🏢 Diagnóstico Ejecutivo 360° del Negocio";
                 badge.textContent = "Auditoría Sofía IA";
@@ -535,24 +503,12 @@
                         `• <b>Balance Neto Operativo:</b> +$${f.balance_neto.toFixed(2)} MXN (${f.tasa_cobranza_pct}% cobranza efectiva)\n` +
                         `• <b>Ticket Promedio:</b> $${f.ticket_promedio.toFixed(2)} MXN\n\n` +
                         `💡 <i>${f.diagnostico}</i>`;
-                } else if (tipo === 'cuentas' && data.analisis) {
-                    const z = data.analisis;
-                    document.getElementById('kpiCanales').textContent = `${z.total_canales} Canales`;
-                    document.getElementById('kpiPipeline').textContent = `${z.total_vistas.toLocaleString()} vistas`;
-                    let canalesList = z.canales_activos.map(c => `• <b>${c.plataforma.toUpperCase()}:</b> @${c.username} (${c.seguidores} seguidores)`).join('\n');
-                    contenido.innerHTML = `<b>Canales Conectados (${z.total_canales}):</b>\n${canalesList}\n\n` +
-                        `• <b>Visualizaciones Totales:</b> ${z.total_vistas.toLocaleString()} vistas orgánicas\n` +
-                        `• <b>Reacciones & Likes:</b> ${z.total_likes} likes | ${z.total_shares} compartidos\n` +
-                        `• <b>Tasa de Interacción Media:</b> ${z.engagement_promedio_pct}%\n` +
-                        `• <b>Pipeline Automatizado:</b> ${z.posts_en_pipeline} publicaciones programadas en cola.\n\n` +
-                        `🚀 <i>${z.diagnostico_audiencia}</i>`;
                 } else if (data.resumen_ejecutivo) {
                     const f = data.finanzas || {};
-                    const z = data.cuentas_digitales || {};
                     contenido.innerHTML = `<b>Resumen Ejecutivo para Sergio Ethan Corona Hernández:</b>\n\n` +
                         `💰 <b>Eje Financiero:</b> $${(f.total_cobrado||0).toFixed(2)} MXN cobrados con 100% de efectividad de cobranza. Balance neto positivo.\n` +
-                        `🌐 <b>Eje Digital (Zernio):</b> Presencia activa en TikTok (@flutter.py) y YouTube, con ${(z.total_vistas||0).toLocaleString()} vistas acumuladas y ${z.posts_en_pipeline||0} contenidos programados.\n\n` +
-                        `✅ <i>Veredicto IA: El negocio se encuentra en una posición financiera sólida con un flujo de contenido digital constante y automatizado.</i>`;
+                        `❄️ <b>Infraestructura Web3:</b> Liquidaciones habilitadas en Avalanche C-Chain, Pollar Smart Wallet en Stellar y Tangem NFC Cold Wallet.\n\n` +
+                        `✅ <i>Veredicto IA: El negocio se encuentra en una posición financiera sólida con conciliación automatizada en tiempo real.</i>`;
                 } else {
                     contenido.textContent = JSON.stringify(data, null, 2);
                 }
@@ -560,212 +516,8 @@
                 contenido.textContent = "Error al consultar el servicio: " + err.message;
             }
         }
-
-        // ==========================================
-        // FUNCIONES MODAL PROGRAMADOR DE VIDEO (ZERNIO API)
-        // ==========================================
-        function abrirModalProgramarVideo() {
-            const modal = document.getElementById('modalVideoZernio');
-            modal.classList.remove('hidden');
-            const now = new Date();
-            now.setHours(now.getHours() + 1);
-            const dtString = now.toISOString().slice(0, 16);
-            const fechaInput = document.getElementById('inputFechaProgramada');
-            if (fechaInput) {
-                fechaInput.min = new Date().toISOString().slice(0, 16);
-                fechaInput.value = dtString;
-            }
-        }
-
-        function cerrarModalProgramarVideo() {
-            const modal = document.getElementById('modalVideoZernio');
-            modal.classList.add('hidden');
-        }
-
-        function toggleProgramarFecha() {
-            const isSchedule = document.querySelector('input[name="timingOpt"][value="schedule"]').checked;
-            const box = document.getElementById('boxFechaHora');
-            if (isSchedule) {
-                box.classList.remove('hidden');
-            } else {
-                box.classList.add('hidden');
-            }
-        }
-
-        async function enviarProgramarVideo(e) {
-            e.preventDefault();
-            const btn = document.getElementById('btnSubmitVideo');
-            const resBox = document.getElementById('videoResultadoBox');
-
-            const titulo = document.getElementById('videoTitulo').value.trim();
-            const contenido = document.getElementById('videoContenido').value.trim();
-            const videoUrl = document.getElementById('videoUrl').value.trim();
-            const chkTikTok = document.getElementById('chkTikTok').checked;
-            const chkYouTube = document.getElementById('chkYouTube').checked;
-            const isSchedule = document.querySelector('input[name="timingOpt"][value="schedule"]').checked;
-            const fechaHora = document.getElementById('inputFechaProgramada').value;
-
-            const platforms = [];
-            if (chkTikTok) platforms.push('tiktok');
-            if (chkYouTube) platforms.push('youtube');
-
-            if (platforms.length === 0) {
-                alert("Debes seleccionar al menos una plataforma (TikTok o YouTube).");
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<span class="inline-block w-2.5 h-2.5 rounded-full bg-white animate-ping mr-2"></span> Conectando con Zernio...';
-            resBox.classList.remove('hidden');
-            resBox.className = "p-3 rounded-2xl text-xs bg-slate-950 border border-slate-800 text-slate-300";
-            resBox.innerHTML = 'Enviando post a la API de Zernio...';
-
-            const payload = {
-                title: titulo,
-                content: contenido,
-                video_url: videoUrl,
-                platforms: platforms,
-                publish_now: !isSchedule,
-                scheduled_for: isSchedule ? fechaHora : null
-            };
-
-            try {
-                const resp = await fetch('https://coronahernandezs931--goyapay-voice-backend-programar-vid-b04cd0.modal.run', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                const data = await resp.json();
-
-                if (data.status === 'success') {
-                    resBox.className = "p-3.5 rounded-2xl text-xs bg-emerald-950/60 border border-emerald-500/40 text-emerald-200 space-y-1.5";
-                    resBox.innerHTML = `
-                        <div class="flex items-center gap-1.5 font-bold text-white">
-                            <span class="text-base">✅</span> ¡Publicación procesada exitosamente en Zernio!
-                        </div>
-                        <p><b>Post ID:</b> <code class="text-emerald-300 font-mono">${data.post_id}</code></p>
-                        <p><b>Destinos:</b> ${data.platforms.map(p => p.toUpperCase()).join(' & ')}</p>
-                        <p><b>Programación:</b> ${data.scheduled_for}</p>
-                        <div class="pt-1.5 flex gap-2">
-                            <a href="${data.dashboard_url || 'https://zernio.com/dashboard'}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-1.5 rounded-xl transition text-[11px]">
-                                <span>Ver en Panel de Zernio ↗</span>
-                            </a>
-                        </div>
-                    `;
-                } else {
-                    resBox.className = "p-3 rounded-2xl text-xs bg-rose-950/60 border border-rose-500/40 text-rose-200";
-                    resBox.innerHTML = `<b>Error al programar en Zernio:</b> ${data.message || JSON.stringify(data)}`;
-                }
-            } catch (err) {
-                resBox.className = "p-3 rounded-2xl text-xs bg-rose-950/60 border border-rose-500/40 text-rose-200";
-                resBox.innerHTML = `<b>Error de conexión:</b> ${err.message}`;
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<span>🚀 Programar en Zernio</span>';
-            }
-        }
     </script>
-
-    <!-- ============================================== -->
-    <!-- MODAL: PROGRAMAR VIDEO EN REDES (ZERNIO API)   -->
-    <!-- ============================================== -->
-    <div id="modalVideoZernio" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm hidden">
-        <div class="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-lg w-full p-6 shadow-2xl relative max-h-[92vh] overflow-y-auto">
-            <!-- Header Modal -->
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-pink-600 to-rose-600 flex items-center justify-center text-white shadow-lg shadow-pink-500/30 text-lg">
-                        🎬
-                    </div>
-                    <div>
-                        <h3 class="text-base font-bold text-white flex items-center gap-2">
-                            Programar Video en Redes
-                            <span class="text-[10px] bg-pink-500/20 text-pink-300 border border-pink-500/30 px-2 py-0.5 rounded-full font-medium">Zernio API</span>
-                        </h3>
-                        <p class="text-xs text-slate-400">Publicación en TikTok (@flutter.py) y YouTube</p>
-                    </div>
-                </div>
-                <button type="button" onclick="cerrarModalProgramarVideo()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>
-
-            <!-- Formulario de Programación -->
-            <form id="formProgramarVideo" onsubmit="enviarProgramarVideo(event)" class="space-y-4 mt-4">
-                <!-- Título -->
-                <div>
-                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1">Título del Video</label>
-                    <input id="videoTitulo" type="text" required value="🚀 GoyaPay AI: Pagos Autónomos por Voz y Cold Wallet Tangem" placeholder="Ej: Demo GoyaPay en Vivo" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition">
-                </div>
-
-                <!-- Descripción & Hashtags -->
-                <div>
-                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1">Descripción y Hashtags</label>
-                    <textarea id="videoContenido" rows="3" required placeholder="Escribe el texto de tu publicación y hashtags..." class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-pink-500 transition">Demostración de liquidación instantánea de adeudos universitarios y gestión financiera de negocio con GoyaPay AI, hardware NFC Tangem y Stripe #fintech #ai #goyapay #web3 #tangem #automation</textarea>
-                </div>
-
-                <!-- URL del Archivo de Video -->
-                <div>
-                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1">URL Directa del Video (MP4)</label>
-                    <input id="videoUrl" type="url" required value="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" placeholder="https://dominio.com/tu-video.mp4" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-pink-500 transition">
-                    <span class="text-[10px] text-slate-400 mt-1 block">Compatible con enlaces directos MP4 o buckets CDN.</span>
-                </div>
-
-                <!-- Selección de Canales Conectados -->
-                <div>
-                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block mb-1.5">Publicar en Canales Conectados:</label>
-                    <div class="grid grid-cols-2 gap-2.5">
-                        <label class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
-                            <input type="checkbox" id="chkTikTok" value="tiktok" checked class="w-4 h-4 rounded text-pink-600 focus:ring-0 bg-slate-900 border-slate-700">
-                            <div>
-                                <span class="text-xs font-bold text-white block">TikTok</span>
-                                <span class="text-[10px] text-slate-400 block font-mono">@flutter.py</span>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-2.5 p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
-                            <input type="checkbox" id="chkYouTube" value="youtube" checked class="w-4 h-4 rounded text-rose-600 focus:ring-0 bg-slate-900 border-slate-700">
-                            <div>
-                                <span class="text-xs font-bold text-white block">YouTube</span>
-                                <span class="text-[10px] text-slate-400 block font-mono truncate max-w-[110px]">@sergioethan</span>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Momento de Envío: Inmediato vs Programado -->
-                <div class="p-3.5 bg-slate-950/70 border border-slate-800 rounded-2xl space-y-2.5">
-                    <label class="text-[11px] uppercase tracking-wider font-semibold text-slate-300 block">Momento de Publicación</label>
-                    <div class="flex gap-4 text-xs text-slate-200">
-                        <label class="flex items-center gap-1.5 cursor-pointer">
-                            <input type="radio" name="timingOpt" value="now" checked onchange="toggleProgramarFecha()" class="text-pink-600 focus:ring-0 bg-slate-900 border-slate-700">
-                            <span>Publicar de inmediato (Publish Now)</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer">
-                            <input type="radio" name="timingOpt" value="schedule" onchange="toggleProgramarFecha()" class="text-pink-600 focus:ring-0 bg-slate-900 border-slate-700">
-                            <span>Programar fecha</span>
-                        </label>
-                    </div>
-
-                    <div id="boxFechaHora" class="hidden pt-2 border-t border-slate-800/80">
-                        <label class="text-[10px] text-slate-400 block mb-1">Fecha y Hora de Publicación (Zona horaria México):</label>
-                        <input id="inputFechaProgramada" type="datetime-local" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-pink-500">
-                    </div>
-                </div>
-
-                <!-- Mensaje de Resultado -->
-                <div id="videoResultadoBox" class="hidden p-3 rounded-2xl text-xs space-y-1"></div>
-
-                <!-- Botones de Acción -->
-                <div class="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-800">
-                    <button type="button" onclick="cerrarModalProgramarVideo()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">
-                        Cancelar
-                    </button>
-                    <button type="submit" id="btnSubmitVideo" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 active:scale-[0.98] text-white text-xs font-bold shadow-lg shadow-pink-500/20 flex items-center gap-2 transition">
-                        <span>🚀 Programar en Zernio</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
+</body>
+</html>
 </body>
 </html>

@@ -520,7 +520,7 @@ async def confirmar_pago_notion(request: Request):
         return {"status": "error", "message": str(e)}
 
 # ==============================================================================
-# 8. MÓDULO DE ADMINISTRACIÓN DE NEGOCIO: FINANZAS (NOTION) & CUENTAS (ZERNIO API)
+# 8. MÓDULO DE ADMINISTRACIÓN DE NEGOCIO: FINANZAS Y AUDITORÍA (NOTION CRM)
 # ==============================================================================
 def obtener_analisis_finanzas_negocio(db_id: str, token: str) -> dict:
     import requests
@@ -590,84 +590,6 @@ def obtener_analisis_finanzas_negocio(db_id: str, token: str) -> dict:
         "pendientes_recientes": pendientes[:5]
     }
 
-def obtener_analisis_zernio(api_key: str) -> dict:
-    import requests
-    headers = {"Authorization": f"Bearer {(api_key or '').strip()}"}
-    
-    # 1. Cuentas conectadas
-    r_acc = requests.get("https://zernio.com/api/v1/accounts", headers=headers)
-    accounts = r_acc.json().get("accounts", []) if r_acc.status_code == 200 else []
-    
-    canales = []
-    total_seguidores = 0
-    for a in accounts:
-        followers = a.get("followersCount", 0) or 0
-        total_seguidores += followers
-        canales.append({
-            "plataforma": a.get("platform"),
-            "display_name": a.get("displayName"),
-            "username": a.get("username"),
-            "seguidores": followers,
-            "activo": a.get("isActive", True),
-            "profile_url": a.get("profileUrl") or a.get("metadata", {}).get("profileUrl")
-        })
-        
-    # 2. Analíticas de publicaciones
-    r_an = requests.get("https://zernio.com/api/v1/analytics", headers=headers)
-    an_data = r_an.json() if r_an.status_code == 200 else {}
-    posts_an = an_data.get("posts", an_data.get("results", []))
-    
-    total_vistas = 0
-    total_likes = 0
-    total_shares = 0
-    total_comments = 0
-    sum_engagement = 0.0
-    posts_con_eng = 0
-    
-    for p in posts_an:
-        if isinstance(p, dict):
-            an = p.get("analytics", {})
-            vistas = an.get("views", 0) or 0
-            likes = an.get("likes", 0) or 0
-            shares = an.get("shares", 0) or 0
-            comments = an.get("comments", 0) or 0
-            eng = an.get("engagementRate", 0.0) or 0.0
-            
-            total_vistas += vistas
-            total_likes += likes
-            total_shares += shares
-            total_comments += comments
-            if eng > 0:
-                sum_engagement += eng
-                posts_con_eng += 1
-                
-    engagement_promedio = (sum_engagement / posts_con_eng) if posts_con_eng > 0 else 0.0
-    
-    # 3. Posts programados en pipeline
-    r_posts = requests.get("https://zernio.com/api/v1/posts", headers=headers)
-    posts_data = r_posts.json() if r_posts.status_code == 200 else {}
-    total_posts_pipeline = posts_data.get("pagination", {}).get("total", 0)
-    
-    diagnostico_audiencia = (
-        f"Tu negocio tiene presencia activa en {len(canales)} canales (TikTok y YouTube), "
-        f"con {total_seguidores} seguidores y más de {total_vistas:,} visualizaciones orgánicas acumuladas en {len(posts_an)} publicaciones. "
-        f"Tasa de interacción promedio del {engagement_promedio:.2f}%. Tienes un pipeline constante con {total_posts_pipeline} publicaciones programadas en cola."
-    )
-    
-    return {
-        "canales_activos": canales,
-        "total_canales": len(canales),
-        "total_seguidores": total_seguidores,
-        "total_vistas": total_vistas,
-        "total_likes": total_likes,
-        "total_shares": total_shares,
-        "total_comments": total_comments,
-        "engagement_promedio_pct": round(engagement_promedio, 2),
-        "posts_en_pipeline": total_posts_pipeline,
-        "posts_analizados": len(posts_an),
-        "diagnostico_audiencia": diagnostico_audiencia
-    }
-
 # 9. Endpoint: Analizar Finanzas y Gastos del Negocio (Notion CRM)
 @app.function(image=image, secrets=[goyapay_secret])
 @modal.fastapi_endpoint(method="POST")
@@ -680,48 +602,34 @@ async def analizar_finanzas_negocio(request: Request):
     except Exception as e:
         return {"status": "error", "error": str(e)}
 
-# 10. Endpoint: Analizar Cuentas Digitales y Audiencia del Negocio (Zernio API)
-@app.function(image=image, secrets=[goyapay_secret])
-@modal.fastapi_endpoint(method="POST")
-async def analizar_cuentas_negocio(request: Request):
-    zernio_key = os.environ.get("ZERNIO_API_KEY", "")
-    try:
-        analisis = obtener_analisis_zernio(zernio_key)
-        return {"status": "success", "analisis": analisis}
-    except Exception as e:
-        return {"status": "error", "error": str(e)}
-
-# 11. Endpoint: Resumen Ejecutivo 360° del Negocio (Finanzas + Cuentas Zernio)
+# 10. Endpoint: Resumen Ejecutivo 360° del Negocio (Finanzas Notion & Web3)
 @app.function(image=image, secrets=[goyapay_secret])
 @modal.fastapi_endpoint(method="POST")
 async def resumen_administrador_negocio(request: Request):
     token = os.environ.get("NOTION_API_KEY")
     db_id = os.environ.get("NOTION_DATABASE_ID")
-    zernio_key = os.environ.get("ZERNIO_API_KEY", "")
     
     try:
         finanzas = obtener_analisis_finanzas_negocio(db_id, token)
     except Exception as e:
         finanzas = {"error": str(e)}
         
-    try:
-        cuentas = obtener_analisis_zernio(zernio_key)
-    except Exception as e:
-        cuentas = {"error": str(e)}
-        
     return {
         "status": "success",
         "administrador": "Sergio Ethan Corona Hernández",
         "plataforma": "GoyaPay Business Manager",
         "finanzas": finanzas,
-        "cuentas_digitales": cuentas,
+        "web3": {
+            "avalanche": "Avalanche C-Chain Mainnet",
+            "stellar": "Pollar Smart Wallet (Soroban)",
+            "tangem": "NFC Hardware Cold Wallet EAL6+"
+        },
         "resumen_ejecutivo": f"💼 **Reporte Ejecutivo GoyaPay Negocios**:\n"
                             f"• Total Recaudado: ${finanzas.get('total_cobrado', 0.0):.2f} MXN ({finanzas.get('num_pagados', 0)} transacciones)\n"
                             f"• Adeudos/Gastos Pendientes: ${finanzas.get('total_pendiente', 0.0):.2f} MXN\n"
                             f"• Balance Neto Operativo: +${finanzas.get('balance_neto', 0.0):.2f} MXN (Salud: {finanzas.get('salud_financiera', 'N/A')})\n"
-                            f"• Cuentas Conectadas en Zernio: {cuentas.get('total_canales', 0)} ({cuentas.get('total_seguidores', 0)} seguidores totales)\n"
-                            f"• Alcance de Contenidos: {cuentas.get('total_vistas', 0):,} vistas acumuladas con {cuentas.get('total_likes', 0)} likes\n"
-                            f"• Pipeline de Publicaciones: {cuentas.get('posts_en_pipeline', 0)} publicaciones programadas"
+                            f"• Cobranza Efectiva: {finanzas.get('tasa_cobranza_pct', 100)}%\n"
+                            f"• Pasarelas Activas: Avalanche C-Chain, Pollar (Stellar Soroban), Tangem NFC, SPEI Banxico y Stripe Oficial"
     }
 
 # 12. Endpoint: Registrar Gasto o Cuenta del Negocio en Notion
@@ -793,7 +701,6 @@ async def chat_goyapay(request: Request):
     
     db_id = os.environ.get("NOTION_DATABASE_ID")
     token = os.environ.get("NOTION_API_KEY")
-    zernio_key = os.environ.get("ZERNIO_API_KEY", "")
     
     # Intención: Análisis de Finanzas / Gastos del Negocio
     if any(w in mensaje for w in ["finanza", "gasto", "balance", "ingreso", "flujo", "caja", "cuentas de mi negocio"]):
@@ -812,64 +719,22 @@ async def chat_goyapay(request: Request):
         except Exception as e:
             return {"respuesta": f"Detalle al analizar finanzas: {str(e)}", "error": str(e)}
 
-    # Intención: Programar Video en Redes (Zernio API)
-    elif any(w in mensaje for w in ["programar video", "subir video", "publicar video", "programar publicación", "subir a tiktok", "subir a youtube", "programar tiktok", "programar youtube"]):
-        texto_resp = (
-            f"🎬 **Programador de Videos en Redes Sociales (Zernio API):**\n\n"
-            f"¡Puedes programar y publicar videos directamente en tus canales de TikTok (@flutter.py) y YouTube (@sergioethancoronahernandez)!\n\n"
-            f"1. Abre el modal pulsando el botón **'🎬 Programar Video'** en la barra de acciones superior de GoyaPay.\n"
-            f"2. Ingresa el título del video, su descripción con hashtags y la URL del archivo de video.\n"
-            f"3. Selecciona si deseas publicación inmediata o programada para una fecha y hora específica.\n\n"
-            f"🔗 [Acceder al Panel de Zernio](https://zernio.com/dashboard)"
-        )
-        return {"respuesta": texto_resp, "dashboard_url": "https://zernio.com/dashboard", "abrir_modal_video": True}
-
-    # Intención: Enlace directo al Panel de Zernio
-    elif any(w in mensaje for w in ["panel de zernio", "link de zernio", "abrir zernio", "dashboard zernio", "ver zernio", "entrar a zernio"]):
-        texto_resp = (
-            f"🌐 **Panel Oficial de Zernio:**\n\n"
-            f"Puedes acceder directamente a tu panel de control para gestionar publicaciones, auditar canales y revisar métricas detalladas en el siguiente enlace:\n\n"
-            f"👉 [Abrir Panel de Zernio](https://zernio.com/dashboard)\n\n"
-            f"*(También puedes pulsar el botón 'Ver Panel de Zernio ↗' en tu panel de GoyaPay)*."
-        )
-        return {"respuesta": texto_resp, "dashboard_url": "https://zernio.com/dashboard"}
-
-    # Intención: Análisis de Cuentas Digitales y Contenidos (Zernio API)
-    elif any(w in mensaje for w in ["red", "redes", "canal", "tiktok", "youtube", "zernio", "audiencia", "seguidor", "metricas", "vistas", "pipeline"]):
-        try:
-            zer = obtener_analisis_zernio(zernio_key)
-            canales_txt = ", ".join([f"{c['plataforma'].capitalize()} (@{c['username']} - {c['seguidores']} seguidores)" for c in zer['canales_activos']])
-            texto_resp = (
-                f"🌐 **Análisis de Cuentas y Canales Digitales (Vía Zernio API):**\n\n"
-                f"• **Canales Conectados ({zer['total_canales']}):** {canales_txt}\n"
-                f"• **Seguidores Totales:** {zer['total_seguidores']}\n"
-                f"• **Visualizaciones Acumuladas:** {zer['total_vistas']:,} vistas orgánicas\n"
-                f"• **Reacciones & Likes:** {zer['total_likes']} likes ({zer['total_shares']} compartidos)\n"
-                f"• **Tasa de Interacción Media:** {zer['engagement_promedio_pct']}%\n"
-                f"• **Pipeline Activo:** {zer['posts_en_pipeline']} publicaciones programadas en cola.\n\n"
-                f"🔗 [Acceder a tu Panel de Zernio](https://zernio.com/dashboard)\n\n"
-                f"🚀 **Diagnóstico:** {zer['diagnostico_audiencia']}"
-            )
-            return {"respuesta": texto_resp, "analisis_cuentas": zer, "dashboard_url": "https://zernio.com/dashboard"}
-        except Exception as e:
-            return {"respuesta": f"Detalle al consultar Zernio: {str(e)}", "error": str(e)}
-
-    # Intención: Resumen Ejecutivo 360° del Negocio
+    # Intención: Resumen Ejecutivo 360° del Negocio (Finanzas & Web3)
     elif any(w in mensaje for w in ["360", "resumen", "ejecutivo", "administrador", "reporte", "como va", "panorama", "diagnostico"]):
         try:
             fin = obtener_analisis_finanzas_negocio(db_id, token)
-            zer = obtener_analisis_zernio(zernio_key)
             texto_resp = (
                 f"🏢 **Resumen Ejecutivo 360° - GoyaPay Business Manager**\n\n"
                 f"**1. Finanzas y Cobranza (Notion CRM):**\n"
                 f"• Cobrado: ${fin['total_cobrado']:.2f} MXN | Pendiente: ${fin['total_pendiente']:.2f} MXN\n"
                 f"• Balance Neto: +${fin['balance_neto']:.2f} MXN (Tasa Cobranza: {fin['tasa_cobranza_pct']}%)\n\n"
-                f"**2. Cuentas Digitales y Difusión (Zernio API):**\n"
-                f"• Presencia en: TikTok y YouTube ({zer['total_seguidores']} seguidores)\n"
-                f"• Tracción: {zer['total_vistas']:,} vistas acumuladas y {zer['posts_en_pipeline']} videos en pipeline\n\n"
-                f"✅ **Veredicto:** El negocio goza de excelente solvencia financiera y un ritmo de publicación automatizado muy consistente."
+                f"**2. Infraestructura Web3 & Pasarelas:**\n"
+                f"• Redes Blockchain: Avalanche C-Chain & Pollar Smart Wallet en Stellar\n"
+                f"• Hardware de Seguridad: Tangem Cold Wallet NFC EAL6+\n"
+                f"• Rieles Bancarios: SPEI Banxico & Stripe Checkout Oficial\n\n"
+                f"✅ **Veredicto:** El negocio goza de excelente solvencia financiera y liquidaciones automatizadas en tiempo real."
             )
-            return {"respuesta": texto_resp, "finanzas": fin, "cuentas": zer}
+            return {"respuesta": texto_resp, "finanzas": fin}
         except Exception as e:
             return {"respuesta": f"Detalle generando reporte: {str(e)}", "error": str(e)}
 
@@ -907,7 +772,7 @@ async def chat_goyapay(request: Request):
         if any(w in mensaje for w in ["pago", "adeudo", "debo", "deuda", "pendiente", "consultar", "saldo", "hola"]):
             if not pagos:
                 return {
-                    "respuesta": "¡Hola Sergio! He consultado el sistema y no tienes ningún adeudo pendiente en este momento. Estás totalmente al corriente.\n\nTambién puedo ayudarte a:\n• 💼 **Analizar finanzas del negocio**\n• 🌐 **Analizar cuentas digitales (Zernio)**\n• 🏢 **Ver resumen ejecutivo del negocio**",
+                    "respuesta": "¡Hola Sergio! He consultado el sistema y no tienes ningún adeudo pendiente en este momento. Estás totalmente al corriente.\n\nTambién puedo ayudarte a:\n• 💼 **Analizar finanzas del negocio**\n• ❄️ **Pagar con Avalanche C-Chain**\n• 🪙 **Pagar con Pollar Stellar**\n• 🏢 **Ver resumen ejecutivo del negocio**",
                     "pagos": []
                 }
             
@@ -971,7 +836,7 @@ async def chat_goyapay(request: Request):
                 }
         else:
             return {
-                "respuesta": "Soy Sofía de GoyaPay AI Business. Puedo ayudarte con:\n• 📋 Consultar adeudos o pagar trámites (Tangem, SPEI o Tarjeta)\n• 💼 **Analizar finanzas del negocio**\n• 🌐 **Analizar cuentas digitales (Zernio)**\n• 🏢 **Resumen ejecutivo 360° del negocio**"
+                "respuesta": "Soy Sofía de GoyaPay AI Business. Puedo ayudarte con:\n• 📋 Consultar adeudos o pagar trámites (Avalanche, Pollar, Tangem, SPEI o Tarjeta)\n• 💼 **Analizar finanzas del negocio**\n• 🏢 **Resumen ejecutivo 360° del negocio**"
             }
     except Exception as e:
         return {"respuesta": f"Hubo un detalle al procesar la solicitud: {str(e)}", "error": str(e)}
@@ -1118,113 +983,7 @@ async def verificar_sesion_stripe(request: Request):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
-# 16. Endpoint: Programar Publicación de Video en Redes Sociales (Zernio API)
-@app.function(image=image, secrets=[goyapay_secret])
-@modal.fastapi_endpoint(method="POST")
-async def programar_video_zernio(request: Request):
-    import requests
-    import os
-    import datetime
-    
-    body = await request.json()
-    args = body.get("args", body)
-    
-    zernio_key = (os.environ.get("ZERNIO_API_KEY") or "").strip()
-    if not zernio_key:
-        return {"status": "error", "message": "ZERNIO_API_KEY no configurada"}
-        
-    title = args.get("title", "Video GoyaPay AI")
-    content = args.get("content", "Demostración de pago con Cold Wallet Tangem y GoyaPay AI #fintech #automation")
-    video_url = args.get("video_url") or "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
-    platforms_input = args.get("platforms", ["tiktok", "youtube"])
-    scheduled_for = args.get("scheduled_for")
-    publish_now = args.get("publish_now", False)
-    
-    headers = {
-        "Authorization": f"Bearer {zernio_key}",
-        "Content-Type": "application/json"
-    }
-    
-    # Obtener mapeo de cuentas Zernio
-    cuentas_map = {
-        "tiktok": "6a0680525e333c05296e9803",
-        "youtube": "6a0fd0a1520992756d99119e"
-    }
-    try:
-        r_acc = requests.get("https://zernio.com/api/v1/accounts", headers=headers, timeout=10)
-        if r_acc.status_code == 200:
-            for acc in r_acc.json().get("accounts", []):
-                plt = acc.get("platform")
-                acc_id = acc.get("_id") or acc.get("id")
-                if plt and acc_id:
-                    cuentas_map[plt] = acc_id
-    except Exception as e_acc:
-        print("Warning obteniendo cuentas Zernio:", e_acc)
-        
-    platforms_payload = []
-    for p in platforms_input:
-        if isinstance(p, dict):
-            platforms_payload.append(p)
-        elif isinstance(p, str):
-            p_lower = p.lower()
-            if p_lower in cuentas_map:
-                platforms_payload.append({
-                    "platform": p_lower,
-                    "accountId": cuentas_map[p_lower]
-                })
-                
-    if not platforms_payload:
-        platforms_payload = [
-            {"platform": "tiktok", "accountId": cuentas_map.get("tiktok", "6a0680525e333c05296e9803")},
-            {"platform": "youtube", "accountId": cuentas_map.get("youtube", "6a0fd0a1520992756d99119e")}
-        ]
-        
-    post_payload = {
-        "title": title,
-        "content": content,
-        "mediaItems": [{"type": "video", "url": video_url}],
-        "platforms": platforms_payload,
-        "visibility": "public"
-    }
-    
-    if publish_now or not scheduled_for or scheduled_for == "now":
-        post_payload["publishNow"] = True
-    else:
-        try:
-            if "T" in scheduled_for and not scheduled_for.endswith("Z"):
-                scheduled_for = scheduled_for + ":00.000Z" if len(scheduled_for) == 16 else scheduled_for + ".000Z"
-        except Exception:
-            pass
-        post_payload["scheduledFor"] = scheduled_for
-        post_payload["timezone"] = "America/Mexico_City"
-        post_payload["status"] = "scheduled"
-        
-    try:
-        resp = requests.post("https://zernio.com/api/v1/posts", headers=headers, json=post_payload, timeout=20)
-        res_data = resp.json() if resp.status_code in [200, 201] else {}
-        
-        if resp.status_code in [200, 201]:
-            post_obj = res_data.get("post", {})
-            post_id = post_obj.get("_id") or post_obj.get("id") or "ok"
-            return {
-                "status": "success",
-                "message": res_data.get("message", "Post procesado exitosamente"),
-                "post_id": post_id,
-                "scheduled_for": post_obj.get("scheduledFor") or ("Inmediato" if publish_now else scheduled_for),
-                "platforms": [p["platform"] for p in platforms_payload],
-                "dashboard_url": "https://zernio.com/dashboard"
-            }
-        else:
-            return {
-                "status": "error",
-                "status_code": resp.status_code,
-                "message": resp.text
-            }
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-
-# 17. Endpoint: Crear Web Call con Retell AI (Proxy Seguro sin exponer API Key en Frontend)
+# 16. Endpoint: Crear Web Call con Retell AI (Proxy Seguro sin exponer API Key en Frontend)
 @app.function(image=image, secrets=[goyapay_secret])
 @modal.fastapi_endpoint(method="POST")
 async def crear_web_call(request: Request):
