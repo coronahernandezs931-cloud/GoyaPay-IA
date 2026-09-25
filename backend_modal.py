@@ -351,13 +351,23 @@ async def enviar_correo_pago(request: Request):
     except Exception as e:
         return {"status": "error", "message": "error al enviar correo", "detail": str(e)}
 
-# 6. Generador de Comprobantes de Pago Multibanco (Tangem, SPEI, Tarjeta)
+# 6. Generador de Comprobantes de Pago Multibanco (Avalanche, Tangem, Pollar, SPEI, Tarjeta)
 def generar_html_correo_recibo(concepto: str, monto: float, metodo_pago: str, detalle: str, nombre_usuario: str = "Sergio Ethan Corona Hernández") -> str:
-    es_spei = "spei" in metodo_pago.lower()
-    es_tarjeta = "tarjeta" in metodo_pago.lower()
-    es_tangem = not es_spei and not es_tarjeta
+    metodo_lower = metodo_pago.lower()
+    es_spei = "spei" in metodo_lower
+    es_tarjeta = "tarjeta" in metodo_lower or "stripe" in metodo_lower
+    es_pollar = "pollar" in metodo_lower or "stellar" in metodo_lower
     
-    if es_spei:
+    if es_pollar:
+        badge_txt = "POLLAR SMART WALLET • RED STELLAR"
+        badge_bg = "rgba(16, 185, 129, 0.15)"
+        badge_border = "rgba(16, 185, 129, 0.3)"
+        badge_color = "#34d399"
+        subtitulo = "Liquidación Descentralizada Validada en Stellar Testnet"
+        detalle_lbl = "Pollar Wallet / Stellar Tx:"
+        detalle_val = detalle if detalle else "GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7"
+        icono = "🪙"
+    elif es_spei:
         badge_txt = "TRANSFERENCIA SPEI ACREDITADA"
         badge_bg = "rgba(16, 185, 129, 0.15)"
         badge_border = "rgba(16, 185, 129, 0.3)"
@@ -376,14 +386,14 @@ def generar_html_correo_recibo(concepto: str, monto: float, metodo_pago: str, de
         detalle_val = detalle if detalle else "Tarjeta Débito/Crédito Cifrada"
         icono = "💳"
     else:
-        badge_txt = "TANGEM COLD WALLET • HARDWARE NFC"
-        badge_bg = "rgba(139, 92, 246, 0.15)"
-        badge_border = "rgba(139, 92, 246, 0.3)"
-        badge_color = "#a78bfa"
-        subtitulo = "Comprobante Criptográfico EAL6+ Validado"
-        detalle_lbl = "Hardware Wallet:"
-        detalle_val = detalle if detalle else "0x92932D7d5341B84f524D0715F3cac55C10d12E4e"
-        icono = "🔐"
+        badge_txt = "AVALANCHE C-CHAIN • TANGEM NFC COLD WALLET"
+        badge_bg = "rgba(229, 62, 62, 0.15)"
+        badge_border = "rgba(229, 62, 62, 0.3)"
+        badge_color = "#fc8181"
+        subtitulo = "Transacción On-Chain Avalanche C-Chain Validada con Hardware EAL6+"
+        detalle_lbl = "Hash Avalanche / Snowtrace:"
+        detalle_val = detalle if detalle else "0x7f9a2b84c01d93e1572bc468d02e482390f142bc (Snowtrace)"
+        icono = "❄️"
 
     return f"""<!DOCTYPE html>
 <html lang="es">

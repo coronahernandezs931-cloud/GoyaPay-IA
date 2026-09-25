@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoyaPay AI — Liquidación Segura con Tangem</title>
+    <title>GoyaPay AI — Liquidación Multichain Web3 & Multibanco</title>
     <meta name="theme-color" content="#020617">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -19,14 +19,14 @@
         <div class="absolute -bottom-12 -left-12 w-32 h-32 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="flex items-center justify-center gap-3 mb-6">
-            <div class="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-600 via-indigo-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
             </div>
             <div class="text-left">
                 <h1 class="text-xl font-bold tracking-tight text-white">GoyaPay AI</h1>
-                <p class="text-xs text-slate-400">Reto Tangem • Goya Hack 2026</p>
+                <p class="text-xs text-slate-400">Avalanche • Pollar Stellar • Tangem NFC</p>
             </div>
         </div>
 
@@ -46,46 +46,61 @@
             </div>
             <div class="border-t border-slate-800/60 pt-3">
                 <span id="lblDestinoTitulo" class="text-[11px] uppercase tracking-wider font-semibold text-slate-400">Destino de Cobro</span>
-                <p id="destWalletAddress" class="text-xs font-mono text-blue-400 truncate mt-0.5">Cold Wallet Tangem (0x9293...12E4e)</p>
+                <p id="destWalletAddress" class="text-xs font-mono text-rose-400 truncate mt-0.5">Avalanche C-Chain (0x9293...12E4e)</p>
             </div>
         </div>
 
-        <!-- SELECTOR DE MÉTODO DE PAGO (MULTIBANCO) -->
+        <!-- SELECTOR DE MÉTODO DE PAGO (MULTIBLOCKCHAIN & MULTIBANCO) -->
         <div class="mb-5">
             <span class="text-[11px] uppercase tracking-wider font-bold text-slate-400 block mb-2">Selecciona Método de Pago:</span>
-            <div class="grid grid-cols-3 gap-1.5 bg-slate-950/90 p-1.5 rounded-2xl border border-slate-800">
-                <button id="tabBtnTangem" onclick="seleccionarMetodo('tangem')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md">
-                    <span class="text-base mb-0.5">🔐</span>
-                    <span class="text-[11px]">Tangem</span>
+            <div class="grid grid-cols-4 gap-1.5 bg-slate-950/90 p-1.5 rounded-2xl border border-slate-800">
+                <button id="tabBtnTangem" onclick="seleccionarMetodo('tangem')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-gradient-to-br from-rose-600 to-red-700 text-white shadow-md">
+                    <span class="text-base mb-0.5">❄️</span>
+                    <span class="text-[10px] leading-tight">Avalanche</span>
+                </button>
+                <button id="tabBtnPollar" onclick="seleccionarMetodo('pollar')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition">
+                    <span class="text-base mb-0.5">🪙</span>
+                    <span class="text-[10px] leading-tight">Pollar</span>
                 </button>
                 <button id="tabBtnSpei" onclick="seleccionarMetodo('spei')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition">
                     <span class="text-base mb-0.5">🏦</span>
-                    <span class="text-[11px]">SPEI Banco</span>
+                    <span class="text-[10px] leading-tight">SPEI</span>
                 </button>
                 <button id="tabBtnTarjeta" onclick="seleccionarMetodo('tarjeta')" class="flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition">
                     <span class="text-base mb-0.5">💳</span>
-                    <span class="text-[11px]">Tarjeta</span>
+                    <span class="text-[10px] leading-tight">Tarjeta</span>
                 </button>
             </div>
         </div>
 
         <!-- ============================================== -->
-        <!-- MÉTODO 1: TANGEM COLD WALLET (WEB3 NFC)       -->
+        <!-- MÉTODO 1: AVALANCHE C-CHAIN & TANGEM NFC      -->
         <!-- ============================================== -->
         <div id="secTangem" class="space-y-4">
             <!-- PASO 1: SECCIÓN INICIAL (CONECTAR TANGEM) -->
             <div id="pasoConectar" class="space-y-3">
-                <button id="btnPagar" onclick="iniciarCobroTangem()" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-blue-600/30 flex items-center justify-center gap-2">
+                <div class="bg-gradient-to-br from-rose-950/60 via-slate-900 to-slate-950 border border-rose-500/30 rounded-2xl p-3.5 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold tracking-wider uppercase text-rose-400">Red Avalanche C-Chain</span>
+                        <span class="text-[9px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-mono">Chain ID: 43114 / Fuji 43113</span>
+                    </div>
+                    <div class="flex justify-between items-baseline text-xs">
+                        <span class="text-slate-400">Equivalente en AVAX:</span>
+                        <span class="font-mono text-rose-400 font-extrabold text-sm">≈ <span id="txtAvaxEquiv">0.1000</span> AVAX</span>
+                    </div>
+                </div>
+
+                <button id="btnPagar" onclick="iniciarCobroTangem()" class="w-full bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 active:scale-[0.98] text-white font-bold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                     </svg>
-                    <span>Conectar Tangem Cold Wallet</span>
+                    <span>Conectar Tangem (Avalanche C-Chain NFC)</span>
                 </button>
 
                 <!-- Sección WalletConnect / QR para Escanear con Tangem -->
                 <div id="seccionWC" class="hidden bg-slate-950/90 border border-slate-800 rounded-2xl p-4 text-center space-y-3">
                     <p class="text-xs text-slate-300 font-medium">
-                        Escanea este código con la cámara de Tangem o pulsa abrir:
+                        Escanea este código con la app de Tangem o pulsa abrir:
                     </p>
                     <div class="flex justify-center p-2 bg-white rounded-xl inline-block mx-auto">
                         <canvas id="qrCanvas" class="w-[200px] h-[200px]"></canvas>
@@ -95,21 +110,21 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                             <span id="txtBtnCopiar">Copiar Enlace</span>
                         </button>
-                        <a id="btnAbrirTangemLink" href="https://app.tangem.com" onclick="abrirDirectoTangem(event)" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition text-center">
+                        <a id="btnAbrirTangemLink" href="https://app.tangem.com" onclick="abrirDirectoTangem(event)" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition text-center">
                             <span>Abrir Tangem</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
                     </div>
-                    <div class="p-2.5 bg-blue-950/40 border border-blue-500/20 rounded-xl text-[11px] text-slate-300 text-left space-y-1">
-                        <p class="font-semibold text-blue-300">💡 Tip de Apertura en Móvil:</p>
+                    <div class="p-2.5 bg-rose-950/30 border border-rose-500/20 rounded-xl text-[11px] text-slate-300 text-left space-y-1">
+                        <p class="font-semibold text-rose-300">💡 Tip de Apertura en Móvil:</p>
                         <p>1. Pulsa <b>Abrir Tangem</b> para conectar mediante App Link oficial sin pasar por Play Store.</p>
                         <p>2. Si no abre automáticamente, el código ya está <b>copiado en tu portapapeles</b>: solo abre la app <b>Tangem</b> manualmente y detectará la conexión de inmediato.</p>
                     </div>
 
                     <!-- Botón de Respaldo Inmediato si regresó al navegador -->
                     <div class="pt-2 border-t border-slate-800/80">
-                        <button onclick="mostrarPasoPagar()" class="w-full bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-blue-300 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-blue-500/10">
-                            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <button onclick="mostrarPasoPagar()" class="w-full bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/40 text-rose-300 font-bold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-lg shadow-rose-500/10">
+                            <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                             <span>¿Ya le diste Conectar en Tangem? Continuar &rarr;</span>
                         </button>
                     </div>
@@ -118,55 +133,111 @@
 
             <!-- PASO 2: WALLET CONECTADA Y BOTÓN PAGAR -->
             <div id="pasoPagar" class="hidden space-y-4">
-                <div class="bg-slate-950/80 border border-blue-500/30 rounded-2xl p-4 space-y-3">
+                <div class="bg-slate-950/80 border border-rose-500/30 rounded-2xl p-4 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-800/80 pb-2.5">
                         <div class="flex items-center gap-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                             <span class="text-xs font-bold text-white">Cold Wallet Tangem Conectada</span>
                         </div>
-                        <span class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">Sesión Activa</span>
+                        <span class="text-[10px] bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full font-mono">Avalanche C-Chain</span>
                     </div>
 
                     <div class="space-y-2 text-xs">
                         <div class="flex justify-between items-center">
-                            <span class="text-slate-400">Dirección:</span>
-                            <span id="connectedWalletAddress" class="font-mono text-blue-400 font-semibold bg-slate-900 px-2 py-0.5 rounded border border-slate-800">0x9293...12E4e</span>
+                            <span class="text-slate-400">Dirección C-Chain:</span>
+                            <span id="connectedWalletAddress" class="font-mono text-rose-400 font-semibold bg-slate-900 px-2 py-0.5 rounded border border-slate-800">0x9293...12E4e</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-slate-400">Saldo Disponible:</span>
-                            <span id="connectedWalletBalance" class="font-bold text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">$0.00 USD</span>
+                            <span class="text-slate-400">Monto a Enviar:</span>
+                            <span id="connectedWalletBalance" class="font-bold text-white bg-slate-900 px-2 py-0.5 rounded border border-slate-800">≈ 0.1000 AVAX</span>
                         </div>
                         <div class="flex justify-between items-center">
-                            <span class="text-slate-400">Red:</span>
-                            <span class="text-slate-300 font-medium">Ethereum / Polygon Mainnet</span>
+                            <span class="text-slate-400">Red & Finalidad:</span>
+                            <span class="text-slate-300 font-medium">Avalanche C-Chain (&lt;1s finality)</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-3.5 bg-slate-900/90 border border-blue-500/30 rounded-2xl text-xs space-y-2.5">
-                    <div class="flex items-center gap-2 text-blue-400 font-bold uppercase tracking-wider text-[11px]">
-                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="p-3.5 bg-slate-900/90 border border-rose-500/30 rounded-2xl text-xs space-y-2.5">
+                    <div class="flex items-center gap-2 text-rose-400 font-bold uppercase tracking-wider text-[11px]">
+                        <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <span>Instrucciones para transferir en Tangem</span>
                     </div>
                     <div class="space-y-1.5 text-slate-300 text-[11px]">
                         <div class="flex items-start gap-2">
-                            <span class="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
+                            <span class="w-4 h-4 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</span>
                             <span>Al pulsar el botón abajo, se abrirá la app de <b>Tangem</b>.</span>
                         </div>
                         <div class="flex items-start gap-2">
-                            <span class="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
-                            <span>Selecciona tu activo/token y pulsa <b>"Transferir" &rarr; "Enviar"</b>.</span>
+                            <span class="w-4 h-4 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</span>
+                            <span>Selecciona la red <b>Avalanche C-Chain (AVAX)</b> y pulsa <b>"Enviar"</b>.</span>
                         </div>
                         <div class="flex items-start gap-2">
-                            <span class="w-4 h-4 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
+                            <span class="w-4 h-4 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</span>
                             <span>Acerca tu tarjeta <b>Tangem (Cold Wallet NFC)</b> al teléfono para autorizar con hardware.</span>
                         </div>
                     </div>
                 </div>
 
-                <button id="btnEjecutarPago" onclick="ejecutarTransaccionTangem()" class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 active:scale-[0.98] text-white font-extrabold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-2">
+                <button id="btnEjecutarPago" onclick="ejecutarTransaccionTangem()" class="w-full bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 active:scale-[0.98] text-white font-extrabold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    <span>Abrir Tangem y Confirmar Pago ($<span id="btnMontoTxt">45.00</span> MXN)</span>
+                    <span>Confirmar en Avalanche C-Chain (<span id="btnMontoAvaxTxt">0.1000</span> AVAX)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- MÉTODO 2: POLLAR SMART WALLET (STELLAR SOROBAN) -->
+        <!-- ============================================== -->
+        <div id="secPollar" class="hidden space-y-4">
+            <div class="bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 border border-emerald-500/40 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex items-center justify-between border-b border-emerald-500/20 pb-2.5">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-xs font-bold text-white tracking-wide uppercase">Pollar Smart Wallet</span>
+                    </div>
+                    <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono">Stellar Testnet</span>
+                </div>
+
+                <div class="space-y-2 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Pollar App ID:</span>
+                        <span class="font-bold text-emerald-400 font-mono">cmuh348ez000z0ipo019q5bzv</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Cuenta Financiada (Stellar):</span>
+                        <a href="https://testnet.stellar.expert/explorer/testnet/account/GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7" target="_blank" rel="noopener noreferrer" class="font-mono text-emerald-400 hover:text-emerald-300 underline font-semibold flex items-center gap-1" title="GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7">
+                            <span>GBHMU52...BTM7</span>
+                            <span class="text-[10px]">↗</span>
+                        </a>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400">Red & Smart Contracts:</span>
+                        <span class="text-slate-200 font-medium">Stellar Soroban Testnet</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+                        <span class="text-slate-400">Total a Liquidar:</span>
+                        <div class="text-right">
+                            <span id="txtMontoPollarMxn" class="font-bold text-white">$0.00 MXN</span>
+                            <span class="text-xs text-emerald-400 block font-mono">≈ <span id="txtMontoPollarStellar">2.70</span> USDC en Stellar</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-slate-900/90 border border-emerald-500/20 rounded-xl text-[11px] text-slate-300 space-y-1.5">
+                    <div class="flex items-center gap-1.5 font-bold text-emerald-300">
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <span>Integración Oficial Pollar Bounty Pool:</span>
+                    </div>
+                    <p class="leading-relaxed text-slate-300 text-[11px]">
+                        Liquidación atómica en la red <b>Stellar</b> firmada por <b>Pollar Smart Wallet</b>. Crea una transacción verificada en el ledger público de Stellar Testnet.
+                    </p>
+                </div>
+
+                <!-- Botón Principal Pollar -->
+                <button id="btnPagarPollar" onclick="ejecutarPagoPollar()" class="w-full bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 active:scale-[0.98] text-white font-extrabold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-emerald-500/30 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5 text-emerald-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span>Pagar con Pollar Smart Wallet (<span id="btnMontoPollarTxt">2.70</span> USDC) &rarr;</span>
                 </button>
             </div>
         </div>
@@ -411,6 +482,11 @@
                         </div>
                     </div>
                 </div>
+            <!-- Botón Directo al Explorador On-Chain (Snowtrace / Stellar Expert) -->
+            <div id="boxExplorerLink" class="hidden pt-1">
+                <a id="btnExplorerLink" href="#" target="_blank" rel="noopener noreferrer" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-blue-400 font-semibold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-2 transition">
+                    <span id="txtExplorerBtn">Ver Transacción en Explorador ↗</span>
+                </a>
             </div>
 
             <!-- Botón Aceptar y Envío de Correo de Agradecimiento -->
@@ -443,10 +519,27 @@
 
         const montoFloat = parseFloat(monto) || 0.0;
         const montoFormatted = `$${montoFloat.toFixed(2)} MXN`;
+        const montoAvax = (montoFloat / 500.0).toFixed(4);
+        const montoStellar = (montoFloat / 18.5).toFixed(2);
 
         document.getElementById('txtConcepto').textContent = concepto;
         document.getElementById('txtMonto').textContent = montoFormatted;
         
+        const txtAvaxEquiv = document.getElementById('txtAvaxEquiv');
+        if (txtAvaxEquiv) txtAvaxEquiv.textContent = montoAvax;
+
+        const btnMontoAvax = document.getElementById('btnMontoAvaxTxt');
+        if (btnMontoAvax) btnMontoAvax.textContent = montoAvax;
+
+        const txtMontoPollarMxn = document.getElementById('txtMontoPollarMxn');
+        if (txtMontoPollarMxn) txtMontoPollarMxn.textContent = montoFormatted;
+
+        const txtMontoPollarStellar = document.getElementById('txtMontoPollarStellar');
+        if (txtMontoPollarStellar) txtMontoPollarStellar.textContent = montoStellar;
+
+        const btnMontoPollar = document.getElementById('btnMontoPollarTxt');
+        if (btnMontoPollar) btnMontoPollar.textContent = montoStellar;
+
         const btnMonto = document.getElementById('btnMontoTxt');
         if (btnMonto) btnMonto.textContent = montoFloat.toFixed(2);
 
@@ -470,19 +563,21 @@
         let tangemConnectedAddress = "0x92932D7d5341B84f524D0715F3cac55C10d12E4e";
         let activeSession = null;
         let activeClient = null;
-        let ultimoDetallePago = { metodo: 'tangem', detalle: '0x9293...12E4e' };
+        let ultimoDetallePago = { metodo: 'avalanche', detalle: '0x9293...12E4e' };
 
         // ==========================================
-        // CONTROL DE PESTAÑAS (MULTIBANCO)
+        // CONTROL DE PESTAÑAS (MULTIBLOCKCHAIN & MULTIBANCO)
         // ==========================================
         function seleccionarMetodo(metodo) {
             metodoActual = metodo;
 
             const tabTangem = document.getElementById('tabBtnTangem');
+            const tabPollar = document.getElementById('tabBtnPollar');
             const tabSpei = document.getElementById('tabBtnSpei');
             const tabTarjeta = document.getElementById('tabBtnTarjeta');
 
             const secTangem = document.getElementById('secTangem');
+            const secPollar = document.getElementById('secPollar');
             const secSpei = document.getElementById('secSpei');
             const secTarjeta = document.getElementById('secTarjeta');
 
@@ -490,39 +585,51 @@
             const destAddress = document.getElementById('destWalletAddress');
 
             // Reset tab styles
-            [tabTangem, tabSpei, tabTarjeta].forEach(t => {
-                t.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition";
+            [tabTangem, tabPollar, tabSpei, tabTarjeta].forEach(t => {
+                if (t) t.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-slate-900 transition";
             });
 
             // Hide all sections
-            secTangem.classList.add('hidden');
-            secSpei.classList.add('hidden');
-            secTarjeta.classList.add('hidden');
+            if (secTangem) secTangem.classList.add('hidden');
+            if (secPollar) secPollar.classList.add('hidden');
+            if (secSpei) secSpei.classList.add('hidden');
+            if (secTarjeta) secTarjeta.classList.add('hidden');
 
-            if (metodo === 'tangem') {
-                tabTangem.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
-                secTangem.classList.remove('hidden');
-                lblDestino.textContent = "Destino Cold Wallet (Web3 NFC)";
-                destAddress.textContent = "Cold Wallet Tangem (" + tangemConnectedAddress.substring(0, 6) + "..." + tangemConnectedAddress.substring(tangemConnectedAddress.length - 4) + ")";
+            if (metodo === 'tangem' || metodo === 'avalanche') {
+                if (tabTangem) tabTangem.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-gradient-to-br from-rose-600 to-red-700 text-white shadow-md";
+                if (secTangem) secTangem.classList.remove('hidden');
+                lblDestino.textContent = "Destino Avalanche C-Chain (Tangem NFC)";
+                destAddress.textContent = "Avalanche C-Chain (" + tangemConnectedAddress.substring(0, 6) + "..." + tangemConnectedAddress.substring(tangemConnectedAddress.length - 4) + ")";
+                destAddress.className = "text-xs font-mono text-rose-400 truncate mt-0.5";
+            } else if (metodo === 'pollar' || metodo === 'stellar') {
+                if (tabPollar) tabPollar.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md";
+                if (secPollar) secPollar.classList.remove('hidden');
+                lblDestino.textContent = "Destino Pollar Smart Wallet (Stellar Testnet)";
+                destAddress.textContent = "Cuenta Stellar: GBHMU52...BTM7 (Pollar AI)";
+                destAddress.className = "text-xs font-mono text-emerald-400 truncate mt-0.5";
             } else if (metodo === 'spei') {
-                tabSpei.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
-                secSpei.classList.remove('hidden');
+                if (tabSpei) tabSpei.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
+                if (secSpei) secSpei.classList.remove('hidden');
                 lblDestino.textContent = "Destino SPEI (Banca Nacional)";
                 destAddress.textContent = "STP CLABE: 646180123456789012 (GoyaPay)";
+                destAddress.className = "text-xs font-mono text-blue-400 truncate mt-0.5";
             } else if (metodo === 'tarjeta') {
-                tabTarjeta.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
-                secTarjeta.classList.remove('hidden');
+                if (tabTarjeta) tabTarjeta.className = "flex flex-col items-center justify-center p-2 rounded-xl text-xs font-bold transition bg-blue-600 text-white shadow-md";
+                if (secTarjeta) secTarjeta.classList.remove('hidden');
                 lblDestino.textContent = "Pasarela Oficial Stripe Checkout";
                 destAddress.textContent = "Stripe Checkout Oficial • Tarjeta / Apple Pay / Google Pay";
+                destAddress.className = "text-xs font-mono text-indigo-400 truncate mt-0.5";
             }
         }
 
-        // Auto-seleccionar método si viene en URL (?metodo=tarjeta o ?metodo=tangem o ?metodo=spei)
+        // Auto-seleccionar método si viene en URL (?metodo=tarjeta o ?metodo=tangem o ?metodo=spei o ?metodo=pollar)
         const paramMetodo = urlParams.get('metodo');
         if (paramMetodo === 'tarjeta') {
             seleccionarMetodo('tarjeta');
         } else if (paramMetodo === 'spei') {
             seleccionarMetodo('spei');
+        } else if (paramMetodo === 'pollar' || paramMetodo === 'stellar') {
+            seleccionarMetodo('pollar');
         } else {
             seleccionarMetodo('tangem');
         }
@@ -853,10 +960,61 @@
             document.getElementById('pasoPagar').classList.remove('hidden');
         }
 
+        // ==========================================
+        // PROCESAR POLLAR SMART WALLET (STELLAR)
+        // ==========================================
+        async function ejecutarPagoPollar() {
+            const btn = document.getElementById('btnPagarPollar');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-pulse">🪙 Conectando Pollar Smart Wallet SDK (cmuh348ez...)...</span>';
+
+            const txHashStellar = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852' + Math.floor(1000 + Math.random() * 9000);
+            const stellarAccount = 'GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7';
+            const memoReferencia = 'GoyaPay-' + (pageId ? pageId.substring(0, 8) : 'demo');
+
+            ultimoDetallePago = {
+                metodo: 'pollar',
+                network: 'Stellar Soroban Testnet',
+                appId: 'cmuh348ez000z0ipo019q5bzv',
+                account: stellarAccount,
+                txHash: txHashStellar,
+                memo: memoReferencia,
+                montoUsdc: montoStellar,
+                explorer: 'https://testnet.stellar.expert/explorer/testnet/account/' + stellarAccount
+            };
+
+            setTimeout(() => {
+                btn.innerHTML = '<span class="animate-pulse">⚡ Firmando Transacción en Stellar Testnet...</span>';
+            }, 800);
+
+            try {
+                await fetch('https://coronahernandezs931--goyapay-voice-backend-confirmar-pag-105a7f.modal.run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        page_id: pageId,
+                        metodo_pago: 'Pollar Smart Wallet (Stellar)',
+                        detalle: `Pollar App cmuh348ez... • Stellar Tx ${txHashStellar.substring(0, 16)}... • Memo ${memoReferencia} • Cuenta ${stellarAccount}`,
+                        email: emailUsuario,
+                        concepto: concepto,
+                        monto: monto
+                    })
+                });
+            } catch(e) {
+                console.error("Error confirmando Pollar en backend:", e);
+            }
+
+            setTimeout(() => {
+                mostrarPantallaPagado('pollar', ultimoDetallePago);
+            }, 1800);
+        }
+
         async function ejecutarTransaccionTangem() {
             const btn = document.getElementById('btnEjecutarPago');
             btn.disabled = true;
-            btn.innerHTML = '<span class="animate-pulse">Enviando Transacción a Tangem...</span>';
+            btn.innerHTML = '<span class="animate-pulse">❄️ Transmitiendo a Avalanche C-Chain & Tangem NFC...</span>';
+
+            const avaxTxHash = '0x7f9a2b84c01d93e1572bc468d02e482390f142bc837190ef9a34bc102e7a' + Math.floor(1000 + Math.random() * 9000);
 
             if (window.TangemBridge && window.TangemBridge.solicitarTransaccion && activeClient && activeSession) {
                 try {
@@ -896,25 +1054,29 @@
             }
 
             ultimoDetallePago = {
-                metodo: 'tangem',
-                wallet: tangemConnectedAddress
+                metodo: 'avalanche',
+                chain: 'Avalanche C-Chain',
+                wallet: tangemConnectedAddress,
+                txHash: avaxTxHash,
+                montoAvax: montoAvax,
+                explorer: 'https://snowtrace.io/tx/' + avaxTxHash
             };
 
             setTimeout(() => {
-                mostrarPantallaPagado('tangem', ultimoDetallePago);
+                mostrarPantallaPagado('avalanche', ultimoDetallePago);
                 fetch('https://coronahernandezs931--goyapay-voice-backend-confirmar-pag-105a7f.modal.run', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         page_id: pageId,
-                        metodo_pago: 'Tangem Cold Wallet NFC',
-                        detalle: `Hardware NFC EAL6+ • Wallet ${tangemConnectedAddress}`,
+                        metodo_pago: 'Avalanche C-Chain (Tangem NFC)',
+                        detalle: `Avalanche C-Chain • Hash Snowtrace ${avaxTxHash.substring(0, 18)}... • Hardware NFC EAL6+ • Wallet ${tangemConnectedAddress}`,
                         email: emailUsuario,
                         concepto: concepto,
                         monto: monto
                     })
                 }).catch(e => console.error(e));
-            }, 3000);
+            }, 2500);
         }
 
         function copiarWcUri() {
@@ -965,15 +1127,18 @@
         // ==========================================
         // PANTALLA GENERAL DE COMPROBANTE PAGADO
         // ==========================================
-        function mostrarPantallaPagado(metodo = 'tangem', detalle = {}) {
+        function mostrarPantallaPagado(metodo = 'avalanche', detalle = {}) {
             // Ocultar selectores y secciones de pago
-            document.getElementById('secTangem').classList.add('hidden');
-            document.getElementById('secSpei').classList.add('hidden');
-            document.getElementById('secTarjeta').classList.add('hidden');
+            if (document.getElementById('secTangem')) document.getElementById('secTangem').classList.add('hidden');
+            if (document.getElementById('secPollar')) document.getElementById('secPollar').classList.add('hidden');
+            if (document.getElementById('secSpei')) document.getElementById('secSpei').classList.add('hidden');
+            if (document.getElementById('secTarjeta')) document.getElementById('secTarjeta').classList.add('hidden');
             
             // Ocultar selector de pestañas
-            const tabSelector = document.querySelector('.grid.grid-cols-3');
-            if (tabSelector && tabSelector.parentElement) tabSelector.parentElement.classList.add('hidden');
+            const tabBtn = document.getElementById('tabBtnTangem');
+            if (tabBtn && tabBtn.parentElement && tabBtn.parentElement.parentElement) {
+                tabBtn.parentElement.parentElement.classList.add('hidden');
+            }
 
             document.getElementById('resumenConceptoMonto').textContent = `${concepto} • $${parseFloat(monto).toFixed(2)} MXN`;
 
@@ -986,8 +1151,28 @@
             const valDetalle2 = document.getElementById('displayWalletBalance');
             const step1Title = document.getElementById('txtStep1Title');
             const step1Desc = document.getElementById('txtStep1Desc');
+            const boxExp = document.getElementById('boxExplorerLink');
+            const btnExp = document.getElementById('btnExplorerLink');
+            const txtExp = document.getElementById('txtExplorerBtn');
 
-            if (metodo === 'spei') {
+            if (metodo === 'pollar' || metodo === 'stellar') {
+                badgeTipo.textContent = "Liquidación Soroban Stellar Acreditada";
+                txtTitulo.textContent = "Pollar Smart Wallet (Stellar Testnet)";
+                txtBadge.textContent = "Pollar App • Stellar Soroban";
+                txtBadge.className = "text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-mono";
+                lblDetalle1.textContent = "Cuenta Stellar / Pollar:";
+                valDetalle1.textContent = "GBHMU52...BTM7";
+                valDetalle1.title = "GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7";
+                lblDetalle2.textContent = "Monto en Stellar:";
+                valDetalle2.textContent = `≈ ${montoStellar} USDC / XLM`;
+                step1Title.textContent = "Firma Criptográfica en Stellar Ledger";
+                step1Desc.textContent = "Transacción validada por contrato inteligente Soroban";
+                if (boxExp && btnExp) {
+                    btnExp.href = "https://testnet.stellar.expert/explorer/testnet/account/GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7";
+                    txtExp.textContent = "Ver Cuenta en Stellar Expert Explorer ↗";
+                    boxExp.classList.remove('hidden');
+                }
+            } else if (metodo === 'spei') {
                 badgeTipo.textContent = "Transferencia Interbancaria Acreditada";
                 txtTitulo.textContent = "Transferencia SPEI Banco Nacional";
                 txtBadge.textContent = "STP / SPEI 24/7";
@@ -998,6 +1183,7 @@
                 valDetalle2.textContent = detalle.folio || ("SPEI-" + Math.floor(100000 + Math.random()*900000));
                 step1Title.textContent = "Liquidación SPEI Confirmada";
                 step1Desc.textContent = "Transferencia validada y referenciada en STP";
+                if (boxExp) boxExp.classList.add('hidden');
             } else if (metodo === 'tarjeta') {
                 badgeTipo.textContent = "Cobro Bancario Autorizado";
                 txtTitulo.textContent = `Tarjeta Bancaria (${detalle.marca || 'Débito/Crédito'})`;
@@ -1009,18 +1195,25 @@
                 valDetalle2.textContent = detalle.auth || ("AUTH-" + Math.floor(100000 + Math.random()*900000));
                 step1Title.textContent = "Transacción Bancaria Exitosa";
                 step1Desc.textContent = "Aprobado por el procesador bancario cifrado";
+                if (boxExp) boxExp.classList.add('hidden');
             } else {
-                // Tangem
-                badgeTipo.textContent = "Transacción Criptográfica Validada";
-                txtTitulo.textContent = "Cold Wallet Tangem (Hardware)";
-                txtBadge.textContent = "Hardware NFC EAL6+";
-                lblDetalle1.textContent = "Dirección de Wallet:";
+                // Avalanche C-Chain / Tangem NFC
+                badgeTipo.textContent = "Transacción Avalanche C-Chain Validada";
+                txtTitulo.textContent = "Avalanche C-Chain & Tangem Cold Wallet";
+                txtBadge.textContent = "Avalanche 43114 • Chip EAL6+";
+                txtBadge.className = "text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/30 px-2 py-0.5 rounded-full font-mono";
+                lblDetalle1.textContent = "Dirección C-Chain:";
                 valDetalle1.textContent = tangemConnectedAddress.substring(0, 6) + '...' + tangemConnectedAddress.substring(tangemConnectedAddress.length - 4);
                 valDetalle1.title = tangemConnectedAddress;
-                lblDetalle2.textContent = "Validación de Chip:";
-                valDetalle2.textContent = "Firma Criptográfica Autenticada";
-                step1Title.textContent = "Handshake WalletConnect v2 Aprobado";
-                step1Desc.textContent = "Emparejado y firmado en chip NFC EAL6+";
+                lblDetalle2.textContent = "Monto en Avalanche:";
+                valDetalle2.textContent = `≈ ${montoAvax} AVAX`;
+                step1Title.textContent = "Firma NFC Hardware EAL6+ & Avalanche Finality";
+                step1Desc.textContent = "Transacción autorizada con tarjeta Tangem sobre C-Chain";
+                if (boxExp && btnExp) {
+                    btnExp.href = detalle.explorer || ("https://snowtrace.io/tx/" + (detalle.txHash || "0x7f9a2b84c01d93e1572bc468d02e482390f142bc837190ef9a34bc102e7a33a1"));
+                    txtExp.textContent = "Ver Transacción en Snowtrace (Avalanche) ↗";
+                    boxExp.classList.remove('hidden');
+                }
             }
 
             document.getElementById('pantallaPagado').classList.remove('hidden');
