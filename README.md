@@ -148,32 +148,47 @@ python test_full_suite.py
 
 ---
 
-## 🪙 Verificación On-Chain en Stellar Testnet (Para Jueces)
+---
 
-El flujo de pago y liquidación de **GoyaPay** sobre la red **Stellar Soroban** es 100% verificable en el ledger público de Stellar Testnet:
+## 🚀 Despliegues On-Chain & Bounties (Verificación Rápida para Jueces)
 
+Esta sección permite a los jueces de **Pollar** y **Avalanche** auditar y verificar el 100% de la integración funcional en menos de 10 segundos:
+
+### 1. 🪙 Bounty Pollar (Stellar Soroban Testnet)
+* **Requisito Técnico:** Integración funcional del SDK y protocolo de Pollar con ejecución de contratos Soroban.
+* **App ID Oficial en Pollar Gateway:** `cmuh348ez000z0ipo019q5bzv`
+* **Archivos con Evidencia de Integración en el Repo:**
+  - `checkout-web/public/checkout.html` (Pipeline animado de 5 fases, autenticación SDK y firma Soroban).
+  - `backend_modal.py` (Conciliación automática y verificación de transacciones on-chain).
+  - `scratch/setup_pollar_key.py` (Configuración de API Keys y dominios autorizados en Pollar MCP).
 * **Cuenta Comercial Receptora de GoyaPay:** [`GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7`](https://stellar.expert/explorer/testnet/account/GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7)
 * **Saldo actual en Ledger:** `10,010.80 XLM`
-* **Pollar Smart Wallet App ID:** `cmuh348ez000z0ipo019q5bzv` (Pollar Gateway)
-
-### 🔗 Transacciones de Pago Recientes Verificables en el Explorador:
-1. **Pago de 2.70 XLM (Memo: `GoyaPay-Hack2026`):**  
-   [`b36f558f35475a17f4e140f2cf18acf207c5da416108e7a7c14fc5476fd69397`](https://stellar.expert/explorer/testnet/tx/b36f558f35475a17f4e140f2cf18acf207c5da416108e7a7c14fc5476fd69397)
-2. **Pago de 5.40 XLM (Memo: `GoyaPay-Inscrip`):**  
-   [`72574a75fadc02655ef9c5ae970b4859634da6985f9a5295f72cf058ce0d928c`](https://stellar.expert/explorer/testnet/tx/72574a75fadc02655ef9c5ae970b4859634da6985f9a5295f72cf058ce0d928c)
-3. **Pago de 2.70 XLM (Memo: `GoyaPay-UNAM`):**  
-   [`1ccb0cde2a8b75a97363a9378634d3f6e7d80c9932c29b9cb2cb403160915a90`](https://stellar.expert/explorer/testnet/tx/1ccb0cde2a8b75a97363a9378634d3f6e7d80c9932c29b9cb2cb403160915a90)
+* **Transacciones de Pago Verificables en Stellar Expert:**
+  - [Tx 1: 2.70 XLM (Memo: `GoyaPay-Hack2026`)](https://stellar.expert/explorer/testnet/tx/b36f558f35475a17f4e140f2cf18acf207c5da416108e7a7c14fc5476fd69397)
+  - [Tx 2: 5.40 XLM (Memo: `GoyaPay-Inscrip`)](https://stellar.expert/explorer/testnet/tx/72574a75fadc02655ef9c5ae970b4859634da6985f9a5295f72cf058ce0d928c)
+  - [Tx 3: 2.70 XLM (Memo: `GoyaPay-UNAM`)](https://stellar.expert/explorer/testnet/tx/1ccb0cde2a8b75a97363a9378634d3f6e7d80c9932c29b9cb2cb403160915a90)
+* **Caso de Uso e Impacto Comunitario:** Democratización de micro-pagos para estudiantes de la UNAM mediante **Account Abstraction**: los alumnos pagan en 1 clic sin tener que custodiar frases de 12 palabras, con comisiones casi nulas ($0.00001 USD) en Stellar.
 
 ---
 
-## 🎯 Ajuste del Problema y Justificación de Stellar
+### 2. ❄️ Bounty Avalanche (AVAX / Fuji Testnet & C-Chain)
+* **Requisito Técnico:** Flujo de transacción y contratos en Avalanche C-Chain / Fuji Testnet con liquidación instantánea (<1s finality).
+* **Red:** Avalanche C-Chain (Chain ID: 43114) / Fuji Testnet (Chain ID: 43113)
+* **Dirección Receptora en Snowtrace:** [`0x92932D7d5341B84f524D0715F3cac55C10d12E4e`](https://snowtrace.io/address/0x92932D7d5341B84f524D0715F3cac55C10d12E4e)
+* **Explorador Fuji Testnet:** [`testnet.snowtrace.io`](https://testnet.snowtrace.io/address/0x92932D7d5341B84f524D0715F3cac55C10d12E4e)
+* **Firma por Hardware NFC:** Integración directa con cold wallets físicas **Tangem (Chip Militar EAL6+)** mediante el protocolo EIP-155 / WalletConnect v2.
+* **Enfoque CriptoUNAM & $PUMA:** GoyaPay permite liquidar cuotas universitarias, eventos y pagos comunitarios directamente en AVAX, interoperable con el ecosistema de la comunidad **CriptoUNAM** y su economía de tokens estudiantiles.
+
+---
+
+## 🎯 Ajuste del Problema y Justificación de Stellar & Avalanche
 
 * **Usuario Objetivo:** Comunidad universitaria (UNAM) y estudiantes de Latinoamérica que realizan pagos frecuentes de bajo monto ($40 a $250 MXN) para constancias, credenciales, extraordinarios e inscripciones.
-* **¿Por qué Stellar es indispensable aquí?**
-  1. **Comisiones Microscópicas ($0.00001 USD):** Las pasarelas tradicionales (Stripe, tarjetas bancarias) cobran 3.6% + $3 MXN por transacción. En un micro-pago universitario de $45 MXN, la comisión bancaria representaría casi el 10% del total. Stellar permite micropagos viables con comisiones casi nulas.
-  2. **Velocidad de Liquidación (3-5 segundos):** Gracias al Stellar Consensus Protocol (SCP), la liquidación es instantánea e irreversible, eliminando contracargos fraudulentos.
-  3. **Memos Nativos:** Permite asociar cada pago directamente al identificador de la orden en Notion CRM sin necesidad de smart contracts complejos y costosos.
-  4. **Pollar Smart Wallet (Account Abstraction):** Los estudiantes no requieren saber de llaves privadas ni gestionar frases semilla; la experiencia de pago se reduce a un solo clic.
+* **¿Por qué la combinación Stellar + Avalanche es indispensable?**
+  1. **Comisiones Microscópicas ($0.00001 USD en Stellar):** Las pasarelas tradicionales (Stripe, tarjetas bancarias) cobran 3.6% + $3 MXN. En un micro-pago de $45 MXN, la comisión bancaria se come el 10% del total.
+  2. **Velocidad y Finalidad Instantánea (<1s en Avalanche, 3-5s en Stellar):** Liquidación definitiva e irreversible que previene contracargos fraudulentos.
+  3. **Seguridad Extrema en el Mundo Físico:** El hardware Tangem NFC permite pagos tap-to-pay en ventanillas universitarias sin riesgo de hackeo.
+  4. **Pollar Smart Wallet:** Abstrae toda la complejidad técnica para que cualquier usuario no técnico pague como si fuera Apple Pay.
 
 ---
 
