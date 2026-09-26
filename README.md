@@ -148,6 +148,42 @@ python test_full_suite.py
 
 ---
 
+## 🪙 Verificación On-Chain en Stellar Testnet (Para Jueces)
+
+El flujo de pago y liquidación de **GoyaPay** sobre la red **Stellar Soroban** es 100% verificable en el ledger público de Stellar Testnet:
+
+* **Cuenta Comercial Receptora de GoyaPay:** [`GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7`](https://stellar.expert/explorer/testnet/account/GBHMU52LYYDXE7HGVEEFGQOKM3UZEAHUSLH6TRPVGWACBQM6BAVUBTM7)
+* **Saldo actual en Ledger:** `10,010.80 XLM`
+* **Pollar Smart Wallet App ID:** `cmuh348ez000z0ipo019q5bzv` (Pollar Gateway)
+
+### 🔗 Transacciones de Pago Recientes Verificables en el Explorador:
+1. **Pago de 2.70 XLM (Memo: `GoyaPay-Hack2026`):**  
+   [`b36f558f35475a17f4e140f2cf18acf207c5da416108e7a7c14fc5476fd69397`](https://stellar.expert/explorer/testnet/tx/b36f558f35475a17f4e140f2cf18acf207c5da416108e7a7c14fc5476fd69397)
+2. **Pago de 5.40 XLM (Memo: `GoyaPay-Inscrip`):**  
+   [`72574a75fadc02655ef9c5ae970b4859634da6985f9a5295f72cf058ce0d928c`](https://stellar.expert/explorer/testnet/tx/72574a75fadc02655ef9c5ae970b4859634da6985f9a5295f72cf058ce0d928c)
+3. **Pago de 2.70 XLM (Memo: `GoyaPay-UNAM`):**  
+   [`1ccb0cde2a8b75a97363a9378634d3f6e7d80c9932c29b9cb2cb403160915a90`](https://stellar.expert/explorer/testnet/tx/1ccb0cde2a8b75a97363a9378634d3f6e7d80c9932c29b9cb2cb403160915a90)
+
+---
+
+## 🎯 Ajuste del Problema y Justificación de Stellar
+
+* **Usuario Objetivo:** Comunidad universitaria (UNAM) y estudiantes de Latinoamérica que realizan pagos frecuentes de bajo monto ($40 a $250 MXN) para constancias, credenciales, extraordinarios e inscripciones.
+* **¿Por qué Stellar es indispensable aquí?**
+  1. **Comisiones Microscópicas ($0.00001 USD):** Las pasarelas tradicionales (Stripe, tarjetas bancarias) cobran 3.6% + $3 MXN por transacción. En un micro-pago universitario de $45 MXN, la comisión bancaria representaría casi el 10% del total. Stellar permite micropagos viables con comisiones casi nulas.
+  2. **Velocidad de Liquidación (3-5 segundos):** Gracias al Stellar Consensus Protocol (SCP), la liquidación es instantánea e irreversible, eliminando contracargos fraudulentos.
+  3. **Memos Nativos:** Permite asociar cada pago directamente al identificador de la orden en Notion CRM sin necesidad de smart contracts complejos y costosos.
+  4. **Pollar Smart Wallet (Account Abstraction):** Los estudiantes no requieren saber de llaves privadas ni gestionar frases semilla; la experiencia de pago se reduce a un solo clic.
+
+---
+
+## 🤖 Declaración de Transparencia y Uso de Inteligencia Artificial
+En cumplimiento con las normas del hackathon y la rúbrica de evaluación:
+* Este proyecto fue concebido, diseñado y desarrollado durante el evento utilizando pair programming con asistentes de Inteligencia Artificial para acelerar el andamiaje del backend serverless en Modal, la integración de SDKs (Pollar, Retell, Twilio, Notion, Resend) y el refinamiento de la interfaz reactiva.
+* Toda la lógica de negocio, integración telefónica, pipelines on-chain y flujos de conciliación fueron probados y validados de extremo a extremo.
+
+---
+
 ## 🎥 Guía de Pitch y Demo en Vivo
 Para ejecutar una demostración guiada del ecosistema (consulta por voz en vivo, análisis financiero en Notion, liquidación en Avalanche / Pollar / Tangem / Stripe), consulta el archivo [DEMO_PITCH_GUIDE.md](DEMO_PITCH_GUIDE.md).
 
