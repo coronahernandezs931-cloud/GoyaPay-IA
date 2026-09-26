@@ -823,15 +823,23 @@
         }
 
         // Detección automática de retorno desde Stripe Checkout
-        if (urlParams.get('stripe_success') === 'true' && urlParams.get('session_id')) {
-            window.addEventListener('DOMContentLoaded', () => {
-                verificarRetornoStripe(urlParams.get('session_id'));
-            });
-            // O ejecutar directo si DOM ya cargó
-            if (document.readyState === 'complete' || document.readyState === 'interactive') {
-                verificarRetornoStripe(urlParams.get('session_id'));
+        let stripeRetornoEjecutado = false;
+        function procesarRetornoStripe() {
+            if (stripeRetornoEjecutado) return;
+            const sid = urlParams.get('session_id');
+            if (urlParams.get('stripe_success') === 'true' && sid) {
+                stripeRetornoEjecutado = true;
+                verificarRetornoStripe(sid);
             }
-        } else if (urlParams.get('stripe_cancel') === 'true') {
+        }
+
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            procesarRetornoStripe();
+        } else {
+            window.addEventListener('DOMContentLoaded', procesarRetornoStripe);
+        }
+
+        if (urlParams.get('stripe_cancel') === 'true') {
             const errBox = document.getElementById('msgError');
             if (errBox) {
                 errBox.textContent = "La operación en Stripe Checkout fue cancelada. Puedes seleccionar otro método o reintentar.";
@@ -964,6 +972,7 @@
             btn.disabled = true;
             btn.innerHTML = '<span class="animate-pulse">🔒 Conectando con Stripe Checkout Oficial...</span>';
 
+            const montoAEnviar = Math.max(montoFloat, 10.0);
             try {
                 const resp = await fetch('https://coronahernandezs931--goyapay-voice-backend-crear-sesion-stripe.modal.run', {
                     method: 'POST',
@@ -971,7 +980,7 @@
                     body: JSON.stringify({
                         page_id: pageId,
                         concepto: concepto,
-                        monto: montoFloat,
+                        monto: montoAEnviar,
                         email: emailUsuario
                     })
                 });

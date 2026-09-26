@@ -864,6 +864,10 @@ async def crear_sesion_stripe(request: Request):
     except (ValueError, TypeError):
         monto = 50.0
         
+    # Stripe requiere un monto mínimo regulatorio de $10.00 MXN
+    if monto < 10.0:
+        monto = 10.0
+        
     email = args.get("email") or "coronahernandezs931@gmail.com"
     base_checkout_url = os.environ.get("VERCEL_CHECKOUT_URL", "https://checkout-web-seven.vercel.app/checkout")
     
@@ -932,8 +936,9 @@ async def verificar_sesion_stripe(request: Request):
                 monto = float(meta.get("monto") or (session.amount_total / 100.0))
             except (ValueError, TypeError):
                 monto = session.amount_total / 100.0
-                
-            email = (session.customer_details.email if session.customer_details and session.customer_details.email else None) or meta.get("email") or "coronahernandezs931@gmail.com"
+            cust_details = getattr(session, 'customer_details', None)
+            cust_email = getattr(cust_details, 'email', None) if cust_details else None
+            email = cust_email or meta.get("email") or "coronahernandezs931@gmail.com"
             
             # 1. Actualizar estado en Notion CRM
             token = os.environ.get("NOTION_API_KEY")
