@@ -1,6 +1,10 @@
 # 🚀 GoyaPay AI — Asistente Autónomo de Voz, Finanzas Web3 & Business Manager
 
-**GoyaPay AI** es una plataforma integral de finanzas, liquidación de adeudos y cobros asistida por Inteligencia Artificial conversacional de voz en tiempo real. Diseñada para eliminar la fricción en la gestión y liquidación de adeudos (universitarios, trámites y negocios), integra infraestructura multicadena Web3 de última generación (**Avalanche C-Chain**, **Pollar Smart Wallet en Stellar Soroban** y hardware criptográfico **Tangem Cold Wallet NFC**), pasarelas bancarias tradicionales (**Stripe Checkout Oficial** y **SPEI Banxico**), y análisis financiero automatizado con **Notion CRM**.
+> 🏆 **Goya Hack 2026 — Track de Inteligencia Artificial (AI) & Reto Tangem**
+> 
+> * **Consigna del Reto:** *"Construye con IA y lleva el producto a usuarios reales: agentes, copilots o flujos donde la wallet y los pagos importen."*
+> * **Nuestra Solución:** **GoyaPay AI** une a **Sofia**, un agente autónomo conversacional de voz en tiempo real con capacidad de análisis financiero y negociación, con un flujo de cobro y liquidación sin fricción hacia la cold wallet física **Tangem NFC (TangemPay)** en Avalanche y **Pollar Smart Wallet** en Stellar Soroban.
+> * **Bounties:** Track AI (Tangem) + Bounty Pollar (Stellar) + Bounty Avalanche (C-Chain/Fuji).
 
 ---
 
