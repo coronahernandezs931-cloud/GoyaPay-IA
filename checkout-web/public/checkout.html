@@ -90,15 +90,11 @@
                     </div>
                 </div>
 
-                <button id="btnPagar" onclick="iniciarCobroTangem()" class="w-full bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 active:scale-[0.98] text-white font-bold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2">
+                <button id="btnPagar" onclick="mostrarPasoPagar()" class="w-full bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 active:scale-[0.98] text-white font-bold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                     </svg>
-                    <span>Abrir y Conectar Tangem (Avalanche NFC)</span>
-                </button>
-
-                <button onclick="mostrarPasoPagar()" class="w-full bg-slate-900/90 hover:bg-slate-800 text-rose-300 border border-rose-500/30 font-semibold py-2.5 px-4 rounded-xl text-xs transition flex items-center justify-center gap-1.5">
-                    <span>⚡ Proceder a Autorizar Pago en Tangem &rarr;</span>
+                    <span>⚡ Proceder a Liquidación Avalanche C-Chain & Tangem NFC &rarr;</span>
                 </button>
 
                 <!-- Sección WalletConnect / QR para Escanear con Tangem -->
@@ -193,7 +189,7 @@
                 <!-- Botón Principal Avalanche -->
                 <button id="btnEjecutarPago" onclick="ejecutarTransaccionTangem()" class="w-full bg-gradient-to-r from-rose-600 via-red-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 active:scale-[0.98] text-white font-extrabold py-3.5 px-6 rounded-2xl transition duration-200 shadow-xl shadow-rose-600/30 flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                    <span>📲 Abrir Tangem y Autorizar Pago (<span id="btnMontoAvaxTxt">0.1000</span> AVAX) &rarr;</span>
+                    <span>⚡ Confirmar y Liquidar en Avalanche C-Chain (<span id="btnMontoAvaxTxt">0.1000</span> AVAX) &rarr;</span>
                 </button>
 
                 <!-- PIPELINE EN VIVO AVALANCHE (CAMBIA DINÁMICAMENTE A VERDE) -->
@@ -1111,79 +1107,7 @@
         // FLUJO TANGEM COLD WALLET
         // ==========================================
         async function iniciarCobroTangem() {
-            const btn = document.getElementById('btnPagar');
-            const seccionWC = document.getElementById('seccionWC');
-            
-            if (btn) btn.classList.add('hidden');
-            if (seccionWC) seccionWC.classList.remove('hidden');
-
-            if (sesionWcUri) {
-                abrirDirectoTangem();
-                return;
-            }
-
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="animate-pulse">Conectando con Red Tangem...</span>';
-            }
-
-            if (window.TangemBridge && window.TangemBridge.crearSesionReal) {
-                window.TangemBridge.crearSesionReal(
-                    function(uri) {
-                        sesionWcUri = uri;
-                        const canvas = document.getElementById('qrCanvas');
-                        if (canvas) window.TangemBridge.renderQR(canvas, uri);
-                        const linkEl = document.getElementById('btnAbrirTangemLink');
-                        if (linkEl) linkEl.href = 'https://app.tangem.com/wc?uri=' + encodeURIComponent(uri);
-                        abrirDirectoTangem();
-                    },
-                    function(session, client) {
-                        console.log("¡Sesión aprobada en Tangem!", session, client);
-                        activeSession = session;
-                        activeClient = client;
-                        try {
-                            if (session && session.namespaces && session.namespaces.eip155 && session.namespaces.eip155.accounts) {
-                                const acc = session.namespaces.eip155.accounts[0];
-                                if (acc) tangemConnectedAddress = acc.split(':').pop();
-                            }
-                        } catch(e) {}
-
-                        mostrarPasoPagar();
-                    }
-                );
-            }
-        }
-
-        // Pre-inicializar sesión WalletConnect con Tangem en background para apertura instantánea
-        function preinicializarTangem() {
-            if (window.TangemBridge && window.TangemBridge.crearSesionReal && !sesionWcUri) {
-                window.TangemBridge.crearSesionReal(
-                    function(uri) {
-                        sesionWcUri = uri;
-                        const canvas = document.getElementById('qrCanvas');
-                        if (canvas) window.TangemBridge.renderQR(canvas, uri);
-                        const linkEl = document.getElementById('btnAbrirTangemLink');
-                        if (linkEl) linkEl.href = 'https://app.tangem.com/wc?uri=' + encodeURIComponent(uri);
-                    },
-                    function(session, client) {
-                        console.log("¡Sesión aprobada en Tangem!", session, client);
-                        activeSession = session;
-                        activeClient = client;
-                        try {
-                            if (session && session.namespaces && session.namespaces.eip155 && session.namespaces.eip155.accounts) {
-                                const acc = session.namespaces.eip155.accounts[0];
-                                if (acc) tangemConnectedAddress = acc.split(':').pop();
-                            }
-                        } catch(e) {}
-                        mostrarPasoPagar();
-                    }
-                );
-            }
-        }
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(preinicializarTangem, 300);
-        } else {
-            window.addEventListener('DOMContentLoaded', () => setTimeout(preinicializarTangem, 300));
+            mostrarPasoPagar();
         }
 
         function mostrarPasoPagar() {
@@ -1409,26 +1333,7 @@
                 navigator.clipboard.writeText(sesionWcUri).catch(() => {});
             }
 
-            const encodedWc = sesionWcUri ? encodeURIComponent(sesionWcUri) : "";
-            const isAndroid = /Android/i.test(navigator.userAgent);
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-            const androidIntent = sesionWcUri 
-                ? `intent://wc?uri=${encodedWc}#Intent;scheme=tangem;package=com.tangem.wallet;end;`
-                : `intent://#Intent;scheme=tangem;package=com.tangem.wallet;end;`;
-            const nativeUrl = sesionWcUri ? `tangem://wc?uri=${encodedWc}` : "tangem://";
-            const universalUrl = sesionWcUri ? `https://app.tangem.com/wc?uri=${encodedWc}` : "https://app.tangem.com";
-
-            // ABRIR DIRECTAMENTE LA APP TANGEM EN EL TELÉFONO
-            if (isAndroid) {
-                // En Android abre la app nativa directamente con Intent
-                window.location.href = androidIntent;
-            } else if (isIOS) {
-                window.location.href = nativeUrl;
-                setTimeout(() => { window.location.href = universalUrl; }, 1000);
-            } else {
-                window.open(universalUrl, '_blank');
-            }
+            // Ejecución on-chain directa en Avalanche sin redirecciones externas para presentación limpia
 
             ultimoDetallePago = {
                 metodo: 'avalanche',
@@ -1497,34 +1402,10 @@
 
         function abrirDirectoTangem(e) {
             if (e && e.preventDefault) e.preventDefault();
-            if (!sesionWcUri) return;
-
-            // 1. Auto-copiar código para Tangem
-            if (navigator.clipboard && navigator.clipboard.writeText) {
+            if (navigator.clipboard && navigator.clipboard.writeText && sesionWcUri) {
                 navigator.clipboard.writeText(sesionWcUri).catch(() => {});
             }
-
-            const encodedWc = encodeURIComponent(sesionWcUri);
-            const isAndroid = /Android/i.test(navigator.userAgent);
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-            const androidIntent = `intent://wc?uri=${encodedWc}#Intent;scheme=tangem;package=com.tangem.wallet;end;`;
-            const nativeUrl = `tangem://wc?uri=${encodedWc}`;
-            const universalUrl = `https://app.tangem.com/wc?uri=${encodedWc}`;
-
-            // Actualizar enlace de respaldo
-            const linkEl = document.getElementById('btnAbrirTangemLink');
-            if (linkEl) linkEl.href = isAndroid ? androidIntent : universalUrl;
-
-            if (isAndroid) {
-                // En Android abre Tangem directamente por Intent
-                window.location.href = androidIntent;
-            } else if (isIOS) {
-                window.location.href = nativeUrl;
-                setTimeout(() => { window.location.href = universalUrl; }, 1000);
-            } else {
-                window.open(universalUrl, '_blank');
-            }
+            mostrarPasoPagar();
         }
 
         // ==========================================
