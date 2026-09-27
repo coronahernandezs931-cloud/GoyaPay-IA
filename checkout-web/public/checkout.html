@@ -1410,17 +1410,22 @@
             }
 
             const encodedWc = sesionWcUri ? encodeURIComponent(sesionWcUri) : "";
-            const universalUrl = sesionWcUri ? `https://app.tangem.com/wc?uri=${encodedWc}` : "https://app.tangem.com";
-            const nativeUrl = sesionWcUri ? `tangem://wc?uri=${encodedWc}` : "tangem://";
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-            // ABRIR DIRECTAMENTE LA APP TANGEM EN EL TELÉFONO O DISPOSITIVO
-            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            if (isMobile) {
-                // Invocar esquema nativo de la app Tangem de inmediato
+            const androidIntent = sesionWcUri 
+                ? `intent://wc?uri=${encodedWc}#Intent;scheme=tangem;package=com.tangem.wallet;end;`
+                : `intent://#Intent;scheme=tangem;package=com.tangem.wallet;end;`;
+            const nativeUrl = sesionWcUri ? `tangem://wc?uri=${encodedWc}` : "tangem://";
+            const universalUrl = sesionWcUri ? `https://app.tangem.com/wc?uri=${encodedWc}` : "https://app.tangem.com";
+
+            // ABRIR DIRECTAMENTE LA APP TANGEM EN EL TELÉFONO
+            if (isAndroid) {
+                // En Android abre la app nativa directamente con Intent
+                window.location.href = androidIntent;
+            } else if (isIOS) {
                 window.location.href = nativeUrl;
-                setTimeout(() => {
-                    window.location.href = universalUrl;
-                }, 600);
+                setTimeout(() => { window.location.href = universalUrl; }, 1000);
             } else {
                 window.open(universalUrl, '_blank');
             }
@@ -1500,29 +1505,25 @@
             }
 
             const encodedWc = encodeURIComponent(sesionWcUri);
-            const universalUrl = `https://app.tangem.com/wc?uri=${encodedWc}`;
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            const androidIntent = `intent://wc?uri=${encodedWc}#Intent;scheme=tangem;package=com.tangem.wallet;end;`;
             const nativeUrl = `tangem://wc?uri=${encodedWc}`;
+            const universalUrl = `https://app.tangem.com/wc?uri=${encodedWc}`;
 
-            // Actualizar etiqueta del botón
+            // Actualizar enlace de respaldo
             const linkEl = document.getElementById('btnAbrirTangemLink');
-            if (linkEl) linkEl.href = universalUrl;
+            if (linkEl) linkEl.href = isAndroid ? androidIntent : universalUrl;
 
-            // 2. Abrir con Universal Link oficial (App Link que intercepta la app directamente)
-            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-            if (isMobile) {
-                const link = document.createElement('a');
-                link.href = universalUrl;
-                link.rel = "noreferrer";
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                // 3. Fallback nativo
-                setTimeout(() => {
-                    window.location.href = nativeUrl;
-                }, 600);
+            if (isAndroid) {
+                // En Android abre Tangem directamente por Intent
+                window.location.href = androidIntent;
+            } else if (isIOS) {
+                window.location.href = nativeUrl;
+                setTimeout(() => { window.location.href = universalUrl; }, 1000);
             } else {
-                window.location.href = universalUrl;
+                window.open(universalUrl, '_blank');
             }
         }
 
