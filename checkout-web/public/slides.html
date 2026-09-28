@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoyaPay AI — Presentación Oficial (Slides)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Ocultar barra de scroll en slides */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .slide {
+            display: none;
+            opacity: 0;
+            transform: scale(0.98);
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .slide.active {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        @media print {
+            body { background: #07090e !important; color: white !important; }
+            .no-print { display: none !important; }
+            .slide { display: flex !important; opacity: 1 !important; transform: none !important; page-break-after: always; min-height: 100vh; }
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+
+    <!-- BARRA SUPERIOR DE PROGRESO Y CONTROLES -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-8 py-3 flex items-center justify-between no-print">
+        <!-- Logo y Evento -->
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20 font-extrabold text-sm text-white">
+                G
+            </div>
+            <div>
+                <span class="text-sm font-bold text-white tracking-tight">GoyaPay AI</span>
+                <span class="hidden sm:inline-block ml-2 text-[10px] bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded-full font-medium">Goya Hack 2026 • UNAM</span>
+            </div>
+        </div>
+
+        <!-- Indicador de Slide y Barra -->
+        <div class="flex items-center gap-4">
+            <div class="text-xs font-mono text-slate-400">
+                <span id="currentSlideNum" class="text-white font-bold">1</span> / <span id="totalSlidesNum">10</span>
+            </div>
+            <div class="w-24 sm:w-40 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <div id="progressBar" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-300" style="width: 10%;"></div>
+            </div>
+        </div>
+
+        <!-- Acciones: Demo en Vivo y Pantalla Completa -->
+        <div class="flex items-center gap-2">
+            <a href="/" target="_blank" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-200 transition">
+                <span>⚡ Demo en Vivo</span>
+            </a>
+            <button onclick="toggleFullScreen()" title="Pantalla Completa" class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL DE DIAPOSITIVAS -->
+    <main class="flex-1 flex items-center justify-center p-4 sm:p-8 pt-20 pb-24 max-w-6xl mx-auto w-full">
+
+        <!-- ========================================== -->
+        <!-- SLIDE 1: PORTADA / VISIÓN -->
+        <!-- ========================================== -->
+        <div class="slide active w-full flex-col justify-center items-center text-center py-8">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold uppercase tracking-wider mb-6">
+                <span>🚀 Track AI (Tangem) • Avalanche • Pollar Stellar</span>
+            </div>
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight mb-6 leading-tight">
+                GoyaPay <span class="bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent">AI</span>
+            </h1>
+            <p class="text-lg sm:text-2xl text-slate-300 max-w-3xl font-light mb-8 leading-relaxed">
+                Asistente conversacional de voz autónomo, pasarela multicadena con <strong class="text-white font-semibold">Cold Wallet Tangem NFC</strong> y plataforma de gestión financiera en tiempo real.
+            </p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl w-full text-left mt-4">
+                <div class="p-3.5 bg-slate-900/80 border border-slate-800 rounded-2xl">
+                    <span class="text-xl">🎙️</span>
+                    <h3 class="text-xs font-bold text-white mt-1">Voz Autónoma</h3>
+                    <p class="text-[11px] text-slate-400">Latencia &lt;600ms y acento natural mexicano.</p>
+                </div>
+                <div class="p-3.5 bg-slate-900/80 border border-slate-800 rounded-2xl">
+                    <span class="text-xl">🔐</span>
+                    <h3 class="text-xs font-bold text-white mt-1">Tangem NFC</h3>
+                    <p class="text-[11px] text-slate-400">Firma criptográfica con chip físico militar EAL6+.</p>
+                </div>
+                <div class="p-3.5 bg-slate-900/80 border border-slate-800 rounded-2xl">
+                    <span class="text-xl">❄️</span>
+                    <h3 class="text-xs font-bold text-white mt-1">Avalanche & Pollar</h3>
+                    <p class="text-[11px] text-slate-400">C-Chain y Stellar Soroban con micropagos en 1 clic.</p>
+                </div>
+                <div class="p-3.5 bg-slate-900/80 border border-slate-800 rounded-2xl">
+                    <span class="text-xl">💼</span>
+                    <h3 class="text-xs font-bold text-white mt-1">Notion CRM</h3>
+                    <p class="text-[11px] text-slate-400">Auditoría contable y conciliación en vivo.</p>
+                </div>
+            </div>
+
+            <div class="mt-10 flex items-center gap-4 text-xs text-slate-500 font-mono">
+                <span>Sergio Ethan Corona Hernández</span>
+                <span>•</span>
+                <span>UNAM Goya Hack 2026</span>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 2: EL PROBLEMA -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <span class="text-xs font-bold text-rose-400 uppercase tracking-widest mb-2 font-mono">01 / Diagnóstico</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">El dolor de cobrar y pagar en la universidad</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-4">
+                <div class="p-6 bg-slate-900/90 border border-rose-500/20 rounded-3xl relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400 text-2xl mb-4">
+                        🏛️
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Filas y Conmutadores Saturados</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Estudiantes perdiendo horas en ventanillas universitarias para pagar constancias, credenciales o extraordinarios de $40 a $150 MXN.
+                    </p>
+                </div>
+
+                <div class="p-6 bg-slate-900/90 border border-amber-500/20 rounded-3xl relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-400 text-2xl mb-4">
+                        💸
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Comisiones Bancarias Abusivas</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Pasarelas tradicionales cobran 3.6% + $3 MXN. En un micro-pago de $45 MXN, la comisión bancaria se come el <strong>10% del total</strong> del trámite.
+                    </p>
+                </div>
+
+                <div class="p-6 bg-slate-900/90 border border-purple-500/20 rounded-3xl relative overflow-hidden">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400 text-2xl mb-4">
+                        📑
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Libros Contables Desactualizados</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        Negocios y facultades gestionando adeudos en Excels obsoletos, cobrando manualmente por WhatsApp y sufriendo de alta cartera vencida.
+                    </p>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-900/60 border border-slate-800 rounded-2xl mt-4 text-center text-sm text-slate-300">
+                ⚡ <strong>Pregunta clave del hackathon:</strong> ¿Cómo lograr que un estudiante o usuario pague por voz y autorice con hardware físico en segundos sin contraseñas complicadas?
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 3: LA SOLUCIÓN -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2 font-mono">02 / La Solución</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">GoyaPay AI: Voz, Ledger y Web3 en 1 Clic</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+                <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-xl font-bold">1</div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">Sofía: Agente de Voz 24/7</h3>
+                            <p class="text-xs text-slate-400">Atención telefónica SIP y WebRTC</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        El usuario llama por teléfono o habla desde el navegador. Sofía reconoce el Caller ID, consulta adeudos en Notion CRM y genera la orden conversando naturalmente.
+                    </p>
+                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono text-blue-300">
+                        "Detecto un adeudo de Credencial por $120. ¿Deseas que te envíe el enlace de pago a tu correo?"
+                    </div>
+                </div>
+
+                <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center text-xl font-bold">2</div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">Pasarela Híbrida Inteligente</h3>
+                            <p class="text-xs text-slate-400">Hardware Cripto + Rieles Tradicionales</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        El usuario abre el checkout y elige su método favorito: acercar su tarjeta <strong class="text-white">Tangem NFC</strong>, pagar en <strong class="text-white">Avalanche</strong>, usar <strong class="text-white">Pollar Stellar</strong>, transferencia <strong class="text-white">SPEI</strong> o <strong class="text-white">Stripe</strong>.
+                    </p>
+                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs font-mono text-emerald-300">
+                        Estado en Notion se actualiza a [PAGADO] en verde en menos de 1 segundo.
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 text-center text-xs mt-2">
+                <div class="p-3 bg-slate-900/50 border border-slate-800 rounded-xl">
+                    <span class="text-emerald-400 font-bold block text-base">&lt;600 ms</span>
+                    <span class="text-slate-400">Latencia de audio</span>
+                </div>
+                <div class="p-3 bg-slate-900/50 border border-slate-800 rounded-xl">
+                    <span class="text-blue-400 font-bold block text-base">EAL6+</span>
+                    <span class="text-slate-400">Seguridad militar Tangem</span>
+                </div>
+                <div class="p-3 bg-slate-900/50 border border-slate-800 rounded-xl">
+                    <span class="text-purple-400 font-bold block text-base">100% Serverless</span>
+                    <span class="text-slate-400">Modal + Vercel + Notion</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 4: ARQUITECTURA TÉCNICA -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <span class="text-xs font-bold text-blue-400 uppercase tracking-widest mb-2 font-mono">03 / Infraestructura</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">Arquitectura de Extremo a Extremo</h2>
+
+            <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-6">
+                <!-- Diagrama Visual -->
+                <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-center">
+                    <div class="p-3 bg-slate-950 border border-blue-500/30 rounded-2xl">
+                        <div class="text-xl mb-1">📱</div>
+                        <div class="text-xs font-bold text-white">Twilio / WebRTC</div>
+                        <p class="text-[10px] text-slate-400 mt-1">Troncal SIP &amp; Audio en navegador</p>
+                    </div>
+                    <div class="flex items-center justify-center text-slate-600 font-bold text-lg hidden sm:flex">&rarr;</div>
+                    <div class="p-3 bg-slate-950 border border-indigo-500/30 rounded-2xl">
+                        <div class="text-xl mb-1">🤖</div>
+                        <div class="text-xs font-bold text-white">Retell AI Engine</div>
+                        <p class="text-[10px] text-slate-400 mt-1">Voz Cartesia + Claude 3.5 Sonnet</p>
+                    </div>
+                    <div class="flex items-center justify-center text-slate-600 font-bold text-lg hidden sm:flex">&rarr;</div>
+                    <div class="p-3 bg-slate-950 border border-purple-500/30 rounded-2xl">
+                        <div class="text-xl mb-1">⚡</div>
+                        <div class="text-xs font-bold text-white">Modal Serverless</div>
+                        <p class="text-[10px] text-slate-400 mt-1">Python 3.11 Microservicios</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-800">
+                    <div class="p-4 bg-slate-950/60 rounded-2xl border border-slate-800/80">
+                        <span class="text-xs font-bold text-blue-400 block mb-1">Notion CRM Ledger</span>
+                        <p class="text-xs text-slate-300">Base de datos dinámica (`GoyaPay_Pagos`) con consulta de saldos y actualización en vivo.</p>
+                    </div>
+                    <div class="p-4 bg-slate-950/60 rounded-2xl border border-slate-800/80">
+                        <span class="text-xs font-bold text-emerald-400 block mb-1">Resend Email API</span>
+                        <p class="text-xs text-slate-300">Despacho de plantillas dark-mode con enlace de pago criptográfico y recibo formal.</p>
+                    </div>
+                    <div class="p-4 bg-slate-950/60 rounded-2xl border border-slate-800/80">
+                        <span class="text-xs font-bold text-purple-400 block mb-1">Vercel Checkout</span>
+                        <p class="text-xs text-slate-300">Frontend reactivo multicadena integrado con WalletConnect v2, Avalanche y Pollar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 5: RETO PATROCINADO TANGEM -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold uppercase mb-2">
+                <span>🏆 Reto Principal de Hackathon</span>
+            </div>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">Integración con Tangem Cold Wallet (NFC)</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+                <div class="p-6 bg-slate-900/90 border border-blue-500/30 rounded-3xl space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span>🔐</span> Seguridad Física con Chip EAL6+
+                    </h3>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Tangem es una tarjeta física inteligente del tamaño de una tarjeta de crédito. Al pulsar <strong>"Pagar con Tangem"</strong>, el usuario acerca la tarjeta a su celular y autoriza con hardware militar.
+                    </p>
+                    <ul class="space-y-2 text-xs text-slate-300">
+                        <li class="flex items-center gap-2"><span class="text-blue-400 font-bold">&bull;</span> Cero riesgo de hackeo de claves privadas en el navegador.</li>
+                        <li class="flex items-center gap-2"><span class="text-blue-400 font-bold">&bull;</span> Sin memorizar palabras semilla vulnerables a phishing.</li>
+                        <li class="flex items-center gap-2"><span class="text-blue-400 font-bold">&bull;</span> Ideal para ventanillas de cajas universitarias.</li>
+                    </ul>
+                </div>
+
+                <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <span>⚙️</span> Protocolo de Enlace WalletConnect v2
+                    </h3>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-xs font-mono text-slate-300 space-y-2">
+                        <div class="text-slate-500">// Handshake directo con esquema nativo</div>
+                        <div class="text-emerald-400">const uri = await client.connect({ ... });</div>
+                        <div class="text-blue-400">const url = `tangem://wc?uri=${encodeURIComponent(uri)}`;</div>
+                        <div class="text-slate-300">window.location.href = url;</div>
+                    </div>
+                    <p class="text-xs text-slate-400">
+                        La conexión se realiza directamente a la app de Tangem sin intermediarios web, evitando errores de relay y pantallas en blanco.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 6: BOUNTY AVALANCHE C-CHAIN -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <span class="text-xs font-bold text-rose-400 uppercase tracking-widest mb-2 font-mono">❄️ Bounty Avalanche</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">Liquidación Instantánea en Avalanche C-Chain</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+                <div class="p-6 bg-slate-900/90 border border-rose-500/20 rounded-3xl space-y-4">
+                    <h3 class="text-lg font-bold text-white">Por qué Avalanche C-Chain</h3>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Avalanche ofrece <strong>finalidad en menos de 1 segundo</strong> y costos de gas de fracciones de centavo, haciendo viable el pago de trámites estudiantiles sin demoras.
+                    </p>
+                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs space-y-1">
+                        <div class="flex justify-between"><span class="text-slate-400">Red:</span><span class="text-white font-mono">Avalanche C-Chain (43114 / 43113)</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Cuenta Comercial:</span><span class="text-rose-400 font-mono text-[11px]">0x9293...12E4e</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Explorador:</span><span class="text-emerald-400 font-mono">Snowtrace Verificado</span></div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-3">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider text-slate-400">Pipeline de 5 Fases On-Chain</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-200">1. Handshake NFC con Tarjeta Tangem</span>
+                            <span class="text-emerald-400 font-bold">&check;</span>
+                        </div>
+                        <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-200">2. Solicitud de Firma EIP-155 (Chain 43114)</span>
+                            <span class="text-emerald-400 font-bold">&check;</span>
+                        </div>
+                        <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-200">3. Verificación de Gas y Broadcast Avalanche RPC</span>
+                            <span class="text-emerald-400 font-bold">&check;</span>
+                        </div>
+                        <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-200">4. Confirmación de Bloque en Ledger Snowtrace</span>
+                            <span class="text-emerald-400 font-bold">&check;</span>
+                        </div>
+                        <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between">
+                            <span class="text-slate-200">5. Conciliación Automática en Notion CRM</span>
+                            <span class="text-emerald-400 font-bold">&check;</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 7: BOUNTY POLLAR (STELLAR SOROBAN) -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest mb-2 font-mono">🪙 Bounty Pollar</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">Pollar Smart Wallet en Stellar Soroban</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+                <div class="p-6 bg-slate-900/90 border border-emerald-500/20 rounded-3xl space-y-4">
+                    <h3 class="text-lg font-bold text-white">Account Abstraction con Passkeys</h3>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Utilizamos <strong>Pollar Smart Wallet</strong> para eliminar completamente la barrera técnica Web3: el estudiante paga con su biometría (huella / FaceID) sin saber qué es un gas fee o una seed phrase.
+                    </p>
+                    <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 text-xs space-y-1">
+                        <div class="flex justify-between"><span class="text-slate-400">Pollar App ID:</span><span class="text-emerald-400 font-mono text-[11px]">cmuh348ez000z0ipo019q5bzv</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Cuenta Comercial:</span><span class="text-slate-300 font-mono text-[11px]">GBHMU52L...BAVUBTM7</span></div>
+                        <div class="flex justify-between"><span class="text-slate-400">Saldo en Ledger:</span><span class="text-emerald-400 font-mono font-bold">10,010.80 XLM</span></div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-4">
+                    <h3 class="text-lg font-bold text-white">Impacto en Micropagos Universitarios</h3>
+                    <ul class="space-y-3 text-xs text-slate-300">
+                        <li class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <strong class="text-emerald-400 block mb-0.5">Comisión de $0.00001 USD:</strong>
+                            En un pago de $50 MXN, el costo de red en Stellar es virtualmente cero comparado con las terminales bancarias.
+                        </li>
+                        <li class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <strong class="text-emerald-400 block mb-0.5">Contratos Inteligentes Soroban:</strong>
+                            Garantizan la liquidación atómica contra el registro contable.
+                        </li>
+                        <li class="p-3 bg-slate-950 rounded-xl border border-slate-800">
+                            <strong class="text-emerald-400 block mb-0.5">Transacciones Verificadas:</strong>
+                            Disponibles en vivo en el explorador oficial de Stellar Expert.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 8: RIELES BANCARIOS (STRIPE & SPEI) -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest mb-2 font-mono">💳 Pasarelas Bancarias</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">Inclusión Total: Tarjetas y SPEI Banxico</h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-4">
+                <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-4">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-xl font-bold">
+                        💳
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Stripe Checkout Oficial</h3>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Para usuarios que prefieren rieles tradicionales, el backend crea sesiones oficiales en <strong>Stripe Checkout</strong> con certificación PCI-DSS Nivel 1.
+                    </p>
+                    <ul class="space-y-1.5 text-xs text-slate-400">
+                        <li>&bull; Compatible con Visa, Mastercard, AMEX, Apple Pay y Google Pay.</li>
+                        <li>&bull; Verificación automática de sesión y actualización de estado en Notion.</li>
+                    </ul>
+                </div>
+
+                <div class="p-6 bg-slate-900/90 border border-slate-800 rounded-3xl space-y-4">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500/10 text-teal-400 flex items-center justify-center text-xl font-bold">
+                        🏦
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Transferencia Interbancaria SPEI (STP)</h3>
+                    <p class="text-sm text-slate-300 leading-relaxed">
+                        Asignación de CLABE interbancaria personalizada de 18 dígitos para transferencias directas desde cualquier app bancaria de México.
+                    </p>
+                    <ul class="space-y-1.5 text-xs text-slate-400">
+                        <li>&bull; Liquidación sin fricción vía Sistema de Pagos Electrónicos Interbancarios.</li>
+                        <li>&bull; Conciliación y recibo de comprobante instantáneo vía correo.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 9: BUSINESS MANAGER & CRM NOTION -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center py-6">
+            <span class="text-xs font-bold text-purple-400 uppercase tracking-widest mb-2 font-mono">💼 Business Manager</span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-6">Auditoría Financiera y CRM en Tiempo Real</h2>
+
+            <div class="p-6 bg-slate-900/90 border border-purple-500/30 rounded-3xl space-y-6">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Ingresos Cobrados</span>
+                        <div class="text-xl font-extrabold text-emerald-400 mt-1">$1,415.00 MXN</div>
+                    </div>
+                    <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Adeudos Pendientes</span>
+                        <div class="text-xl font-extrabold text-amber-400 mt-1">$370.00 MXN</div>
+                    </div>
+                    <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Balance Operativo</span>
+                        <div class="text-xl font-extrabold text-blue-400 mt-1">+$1,045.00 MXN</div>
+                    </div>
+                    <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800">
+                        <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Tasa de Cobranza</span>
+                        <div class="text-xl font-extrabold text-purple-400 mt-1">79.3%</div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-slate-950/70 rounded-2xl border border-slate-800 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-white flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            Diagnóstico de Solvencia con Inteligencia Artificial
+                        </span>
+                        <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">Estado: Saludable</span>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        El administrador puede pedirle a Sofía por voz o chat: <em>"Analiza las finanzas de mi negocio"</em>. El sistema calcula en vivo el ticket promedio, tasa de recuperación y emite un reporte ejecutivo 360°.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- SLIDE 10: CONCLUSIONES Y DEMO EN VIVO -->
+        <!-- ========================================== -->
+        <div class="slide w-full flex-col justify-center items-center text-center py-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase mb-4">
+                <span>🎯 Conclusión &amp; Pitch</span>
+            </div>
+            <h2 class="text-4xl sm:text-6xl font-extrabold text-white mb-4">El Futuro de la Cobranza Universitaria</h2>
+            <p class="text-base sm:text-lg text-slate-300 max-w-2xl font-light mb-8">
+                GoyaPay AI demuestra que la Inteligencia Artificial de voz y el hardware criptográfico de Tangem pueden convivir para resolver problemas cotidianos de millones de estudiantes.
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center gap-4 max-w-xl w-full">
+                <a href="/" target="_blank" class="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-sm shadow-xl shadow-blue-500/25 transition">
+                    🎙️ Probar Simulador de Voz
+                </a>
+                <a href="/checkout?page_id=3e549bc5-0aa5-8109-bd08-c8a1ebf5f1b4&concepto=Inscripci%C3%B3n+Goya+Hack+2026&monto=50.00" target="_blank" class="px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm transition">
+                    ❄️ Pasarela Tangem / Avalanche
+                </a>
+                <a href="https://github.com/coronahernandezs931-cloud/GoyaPay-IA" target="_blank" class="px-6 py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-bold text-sm transition">
+                    💻 Código en GitHub
+                </a>
+            </div>
+
+            <div class="mt-12 text-xs text-slate-500">
+                Goya Hack 2026 • Universidad Nacional Autónoma de México (UNAM) &bull; Sergio Ethan Corona Hernández
+            </div>
+        </div>
+
+    </main>
+
+    <!-- BARRA INFERIOR DE NAVEGACIÓN -->
+    <footer class="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-md border-t border-slate-800/80 px-4 sm:px-8 py-3 flex items-center justify-between no-print">
+        <div class="text-xs text-slate-500 hidden sm:block">
+            Usa las flechas <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-800 rounded text-slate-300 font-mono">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-900 border border-slate-800 rounded text-slate-300 font-mono">→</kbd> o la barra espaciadora
+        </div>
+
+        <div class="flex items-center gap-3 mx-auto sm:mx-0">
+            <button onclick="prevSlide()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                <span>Anterior</span>
+            </button>
+            <button onclick="nextSlide()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-lg shadow-blue-500/20 transition flex items-center gap-1.5">
+                <span>Siguiente</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE CONTROL DE PRESENTACIÓN -->
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('totalSlidesNum').textContent = totalSlides;
+
+        function updateSlide() {
+            slides.forEach((s, idx) => {
+                if (idx === currentSlide) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+            document.getElementById('currentSlideNum').textContent = currentSlide + 1;
+            const pct = ((currentSlide + 1) / totalSlides) * 100;
+            document.getElementById('progressBar').style.width = pct + '%';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        // Navegación por teclado
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Soporte gestual touch (swipe) para celulares
+        let touchStartX = 0;
+        window.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        window.addEventListener('touchend', (e) => {
+            let touchEndX = e.changedTouches[0].screenX;
+            if (touchStartX - touchEndX > 50) {
+                nextSlide();
+            } else if (touchEndX - touchStartX > 50) {
+                prevSlide();
+            }
+        }, false);
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

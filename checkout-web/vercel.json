@@ -3,6 +3,14 @@
     {
       "source": "/checkout",
       "destination": "/checkout.html"
+    },
+    {
+      "source": "/slides",
+      "destination": "/slides.html"
+    },
+    {
+      "source": "/presentacion",
+      "destination": "/slides.html"
     }
   ]
 }
