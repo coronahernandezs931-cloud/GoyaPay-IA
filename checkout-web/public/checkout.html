@@ -114,7 +114,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
                             <span id="txtBtnCopiar">Copiar Enlace</span>
                         </button>
-                        <a id="btnAbrirTangemLink" href="https://app.tangem.com" onclick="abrirDirectoTangem(event)" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition text-center">
+                        <a id="btnAbrirTangemLink" href="javascript:void(0)" onclick="abrirDirectoTangem(event)" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition text-center">
                             <span>Abrir Tangem</span>
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
@@ -758,7 +758,8 @@
         if (txtCorreo) txtCorreo.innerHTML = `Se enviará un comprobante de agradecimiento a <b>${emailUsuario}</b>`;
 
         let metodoActual = "tangem";
-        let sesionWcUri = "wc:3a8170812b534d0ff9d794f19a901d64@" + Date.now() + "?relay-protocol=irn&symKey=3a8170812b534d0ff9d794f19a901d648f92b74c102e7a33a1";
+        let sesionWcUri = "";
+        let sesionWcRealGenerada = false;
         let tangemConnectedAddress = "0x92932D7d5341B84f524D0715F3cac55C10d12E4e";
         let activeSession = null;
         let activeClient = null;
@@ -1125,55 +1126,51 @@
             const btn = document.getElementById('btnPagar');
             const seccionWC = document.getElementById('seccionWC');
             
-            if (btn) btn.classList.add('hidden');
-            if (seccionWC) seccionWC.classList.remove('hidden');
-
-            const canvas = document.getElementById('qrCanvas');
-            if (canvas && window.TangemBridge && window.TangemBridge.renderQR && sesionWcUri) {
-                window.TangemBridge.renderQR(canvas, sesionWcUri);
+            // Si la sesión real ya fue generada previamente:
+            if (sesionWcRealGenerada && sesionWcUri) {
+                if (btn) btn.classList.add('hidden');
+                if (seccionWC) seccionWC.classList.remove('hidden');
+                const canvas = document.getElementById('qrCanvas');
+                if (canvas && window.TangemBridge && window.TangemBridge.renderQR) {
+                    window.TangemBridge.renderQR(canvas, sesionWcUri);
+                }
+                const linkEl = document.getElementById('btnAbrirTangemLink');
+                if (linkEl) linkEl.href = 'tangem://wc?uri=' + encodeURIComponent(sesionWcUri);
+                abrirDirectoTangem();
+                return;
             }
-            const linkEl = document.getElementById('btnAbrirTangemLink');
-            if (linkEl && sesionWcUri) {
-                linkEl.href = 'https://app.tangem.com/wc?uri=' + encodeURIComponent(sesionWcUri);
+
+            // Si está terminando de negociar, mostrar estado y abrir en cuanto esté listo
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="animate-pulse">Conectando canal seguro Tangem...</span>';
             }
 
-            // Invocar apertura en Tangem inmediatamente
-            abrirDirectoTangem();
-
-            // Asegurar sesión en background
-            if (window.TangemBridge && window.TangemBridge.crearSesionReal) {
-                window.TangemBridge.crearSesionReal(
-                    function(uri) {
-                        sesionWcUri = uri;
-                        if (canvas && window.TangemBridge.renderQR) window.TangemBridge.renderQR(canvas, uri);
-                        if (linkEl) linkEl.href = 'https://app.tangem.com/wc?uri=' + encodeURIComponent(uri);
-                    },
-                    function(session, client) {
-                        console.log("¡Sesión aprobada en Tangem!", session, client);
-                        activeSession = session;
-                        activeClient = client;
-                        try {
-                            if (session && session.namespaces && session.namespaces.eip155 && session.namespaces.eip155.accounts) {
-                                const acc = session.namespaces.eip155.accounts[0];
-                                if (acc) tangemConnectedAddress = acc.split(':').pop();
-                            }
-                        } catch(e) {}
-                        mostrarPasoPagar();
-                    }
-                ).catch(() => {});
-            }
+            conectarSesionReal(true);
         }
 
-        // Pre-inicializar sesión WalletConnect en segundo plano para apertura inmediata
-        function preinicializarTangem() {
+        let conectandoWc = false;
+        function conectarSesionReal(abrirAlTerminar = false) {
+            if (conectandoWc && !abrirAlTerminar) return;
+            conectandoWc = true;
+
             if (window.TangemBridge && window.TangemBridge.crearSesionReal) {
                 window.TangemBridge.crearSesionReal(
                     function(uri) {
                         sesionWcUri = uri;
+                        sesionWcRealGenerada = true;
                         const canvas = document.getElementById('qrCanvas');
                         if (canvas && window.TangemBridge.renderQR) window.TangemBridge.renderQR(canvas, uri);
                         const linkEl = document.getElementById('btnAbrirTangemLink');
-                        if (linkEl) linkEl.href = 'https://app.tangem.com/wc?uri=' + encodeURIComponent(uri);
+                        if (linkEl) linkEl.href = 'tangem://wc?uri=' + encodeURIComponent(uri);
+
+                        if (abrirAlTerminar) {
+                            const btn = document.getElementById('btnPagar');
+                            const seccionWC = document.getElementById('seccionWC');
+                            if (btn) btn.classList.add('hidden');
+                            if (seccionWC) seccionWC.classList.remove('hidden');
+                            abrirDirectoTangem();
+                        }
                     },
                     function(session, client) {
                         console.log("¡Sesión aprobada en Tangem!", session, client);
@@ -1187,13 +1184,14 @@
                         } catch(e) {}
                         mostrarPasoPagar();
                     }
-                ).catch(() => {});
+                ).catch((e) => console.log("WC error:", e));
             }
         }
+
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            setTimeout(preinicializarTangem, 150);
+            setTimeout(() => conectarSesionReal(false), 100);
         } else {
-            window.addEventListener('DOMContentLoaded', () => setTimeout(preinicializarTangem, 150));
+            window.addEventListener('DOMContentLoaded', () => setTimeout(() => conectarSesionReal(false), 100));
         }
 
         function mostrarPasoPagar() {
@@ -1420,7 +1418,6 @@
             }
 
             const encodedWc = sesionWcUri ? encodeURIComponent(sesionWcUri) : "";
-            const universalUrl = sesionWcUri ? `https://app.tangem.com/wc?uri=${encodedWc}` : "https://app.tangem.com";
             const nativeUrl = sesionWcUri ? `tangem://wc?uri=${encodedWc}` : "tangem://";
 
             // En móvil intentar invocar la app Tangem de fondo sin redirigir la pestaña
@@ -1508,22 +1505,16 @@
             }
 
             const encodedWc = encodeURIComponent(sesionWcUri);
-            const universalUrl = `https://app.tangem.com/wc?uri=${encodedWc}`;
             const nativeUrl = `tangem://wc?uri=${encodedWc}`;
 
-            // Actualizar etiqueta del botón
+            // Actualizar enlace del botón
             const linkEl = document.getElementById('btnAbrirTangemLink');
-            if (linkEl) linkEl.href = universalUrl;
+            if (linkEl) linkEl.href = nativeUrl;
 
-            // 2. Abrir con Universal Link oficial (App Link que intercepta la app directamente)
+            // Abrir directamente con esquema nativo de la app Tangem
             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
             if (isMobile) {
                 window.location.href = nativeUrl;
-                setTimeout(() => {
-                    window.location.href = universalUrl;
-                }, 350);
-            } else {
-                window.open(universalUrl, '_blank');
             }
         }
 
